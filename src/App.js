@@ -1,36 +1,64 @@
-import React, { useState } from 'react';
-import { Stage, Layer, Line } from 'react-konva';
-import { Navbar, Container } from 'react-bootstrap';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import './App.css';
+import React, { useState, useRef } from "react";
+import { Stage, Layer, Line, Label, Tag, Text } from "react-konva";
+import { Navbar, Container, Modal, Button, Form } from "react-bootstrap";
+import { stringData } from "./data";
+
+import "bootstrap/dist/css/bootstrap.min.css";
+import "./App.css";
+
+const StringSpacing = 10;
 
 function App() {
-  const [message, setMessage] = useState('');
-  const [xScale, setXScale] = useState(13);
-  const [yScale, setYScale] = useState(
-    calculateHypotenuse((40 * Math.PI) / 180)
-  );
+  const [soundBoardAngle, setSoundBoardAngle] = useState(40);
+  const [yOffset, setYOffset] = useState(calculateYOffset(soundBoardAngle));
+  const [stringId, setStringId] = useState(null);
+  const [stringLength, setStringLength] = useState(0);
+  const [tension, setTension] = useState(0);
+  const [showModal, setShowModal] = useState(false);
+  const [showSoundBoardAngleModal, setShowSoundBoardAngleModal] = useState(false);
+
+  const tooltip = useRef(null);
 
   const handleEnter = (event, string) => {
     const line = event.target;
-    if (line) line.attrs.strokeWidth = '6';
+    if (line) line.attrs.strokeWidth = "6";
     line.parent.draw();
-    setMessage(
-      `Frequency: ${string.frequency} Hz, Length: ${string.length} mm, Tension: ${string.tension} pounds`
-    );
+    tooltip.current
+      .getText()
+      .text(
+        `Frequency: ${string.frequency} Hz, Length: ${string.length} mm, Tension: ${string.tension} pounds`
+      );
+    tooltip.current.position({
+      x: event.evt.layerX,
+      y: event.evt.layerY - 5,
+    });
+    tooltip.current.show();
   };
 
   const handleLeave = (event) => {
     const line = event.target;
-    if (line) line.attrs.strokeWidth = '2';
+    if (line) line.attrs.strokeWidth = "2";
     line.parent.draw();
-    setMessage('');
+    tooltip.current.hide();
   };
 
   const handleClick = (string) => {
-    setMessage(
-      `Frequency: ${string.frequency} Hz, Length: ${string.length} mm, Tension: ${string.tension} pounds`
-    );
+    setStringId(string.id);
+    setStringLength(string.length);
+    setTension(string.tension);
+    setShowModal(true);
+  };
+
+  const updateString = () => {
+    const string = stringData.find((string) => string.id === stringId);
+    string.length = stringLength;
+    string.tension = tension;
+    setShowModal(false);
+  };
+
+  const updateSoundBoardAngle = () => {
+    setYOffset(calculateYOffset(soundBoardAngle));
+    setShowSoundBoardAngleModal(false);
   };
 
   return (
@@ -40,6 +68,60 @@ function App() {
           <Navbar.Brand>Harp Designer</Navbar.Brand>
         </Container>
       </Navbar>
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
+        <Modal.Body>
+          <Form>
+            <Form.Group className='mb-3'>
+              <Form.Label>String Length (mm)</Form.Label>
+              <Form.Control
+                type='number'
+                value={stringLength}
+                onChange={(e) => setStringLength(e.target.value)}
+              />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Tension (lb)</Form.Label>
+              <Form.Control
+                type='number'
+                value={tension}
+                onChange={(e) => setTension(e.target.value)}
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant='secondary' onClick={() => setShowModal(false)}>
+            Close
+          </Button>
+          <Button variant='primary' onClick={updateString}>
+            Save
+          </Button>
+        </Modal.Footer>
+      </Modal>
+      <Modal show={showSoundBoardAngleModal} onHide={() => setShowSoundBoardAngleModal(false)}>
+        <Modal.Body>
+          <Form>
+            <Form.Group className='mb-3'>
+              <Form.Label>
+                Angle (<span>&#176;</span>)
+              </Form.Label>
+              <Form.Control
+                type='number'
+                value={soundBoardAngle}
+                onChange={(e) => setSoundBoardAngle(e.target.value)}
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant='secondary' onClick={() => setShowSoundBoardAngleModal(false)}>
+            Close
+          </Button>
+          <Button variant='primary' onClick={updateSoundBoardAngle}>
+            Save
+          </Button>
+        </Modal.Footer>
+      </Modal>
       <Stage width={window.innerWidth * 0.9} height={window.innerHeight * 0.9}>
         <Layer>
           {stringData.map((string, index) => {
@@ -48,8 +130,8 @@ function App() {
                 key={string.id}
                 className='string'
                 x={xPosition(index)}
-                y={yPosition(index, yScale)}
-                points={[0, 0, 0, string.length * -0.6]}
+                y={yPosition(index, yOffset)}
+                points={[0, 0, 0, string.length * -0.4]}
                 stroke='blue'
                 onMouseEnter={(e) => handleEnter(e, string)}
                 onMouseLeave={(e) => handleLeave(e)}
@@ -61,7 +143,7 @@ function App() {
           <Line
             x={xPosition(0)}
             y={0}
-            points={linePoints(yScale)}
+            points={linePoints(yOffset)}
             stroke='black'
             strokeWidth={5}
             lineCap='round'
@@ -70,259 +152,135 @@ function App() {
 
           <Line
             x={xPosition(0)}
-            y={yPosition(0, yScale)}
-            points={[0, 0, 13 * 35, -yScale * 35]}
+            y={0}
+            points={neckPoints(yOffset)}
             stroke='black'
             strokeWidth={5}
             lineCap='round'
+            tension={0.5}
+          />
+
+          <Line
+            x={xPosition(0)}
+            y={yPosition(0, yOffset)}
+            points={[
+              StringSpacing * -2,
+              yOffset * 2,
+              0,
+              0,
+              StringSpacing * 37,
+              -yOffset * 37,
+              StringSpacing * 38,
+              -yOffset * 37,
+              StringSpacing * 2,
+              yOffset * 2,
+            ]}
+            stroke='black'
+            strokeWidth={5}
+            closed
+            lineJoin='round'
+            lineCap='round'
+            onClick={() => setShowSoundBoardAngleModal(true)}
+            onMouseEnter={(event) => {
+              const line = event.target;
+              if (line) line.attrs.strokeWidth = "10";
+              line.parent.draw();
+              tooltip.current.getText().text(soundBoardAngle + "\xB0");
+              tooltip.current.position({
+                x: event.evt.layerX,
+                y: event.evt.layerY - 5,
+              });
+              tooltip.current.show();
+            }}
+            onMouseLeave={(event) => {
+              const line = event.target;
+              if (line) line.attrs.strokeWidth = "5";
+              line.parent.draw();
+              tooltip.current.hide();
+            }}
+          />
+          <Line
+            x={xPosition(0)}
+            y={yPosition(0, yOffset)}
+            points={[
+              StringSpacing * -2,
+              yOffset * 2,
+              StringSpacing * -5,
+              yOffset * 2,
+              StringSpacing * -5,
+              stringData[0].length * -0.43,
+              StringSpacing * -2,
+              stringData[0].length * -0.43,
+            ]}
+            stroke='black'
+            strokeWidth={5}
+            closed
+            lineJoin='round'
+            lineCap='round'
           />
         </Layer>
+        <Layer>
+          <Label opacity={0.8} visible={false} listening={false} ref={tooltip}>
+            <Tag
+              fill='black'
+              pointerDirection='down'
+              pointerWidth={10}
+              pointerHeight={10}
+              lineJoin='round'
+            />
+            <Text text='' fontSize={18} padding={5} fill='white' />
+          </Label>
+        </Layer>
       </Stage>
-      <h2>{message}</h2>
     </div>
   );
 }
 
 export default App;
 
+const inchToMeter = (value) => {
+  return (value * 2.54) / 100;
+};
+
+const mmToMeter = (value) => {
+  return value * 1000;
+};
+
+const calculateTension = (string) => {
+  const p = 1150;
+  const mu = (inchToMeter(string.diameter) / 2) ** 2 * Math.PI * p;
+  return (string.frequency / (1 / (2 * mmToMeter(string.length)))) ** 2 * mu * 2.2046;
+};
+
 const xPosition = (index) => {
-  return index * 13 + 500;
+  return index * StringSpacing + 500;
 };
 
 const yPosition = (index, scale) => {
-  return 900 - index * scale;
+  return 600 - index * scale;
 };
 
 const linePoints = (scale) => {
   return stringData
     .map((string, index) => {
+      return [index * StringSpacing, yPosition(index, scale) - stringData[index].length * 0.4];
+    })
+    .flat();
+};
+
+const neckPoints = (scale) => {
+  return stringData
+    .map((string, index) => {
       return [
-        index * 13,
-        yPosition(index, scale) - stringData[index].length * 0.6,
+        index * StringSpacing,
+        yPosition(index, scale) - stringData[index].length * 0.4 - 35 + index * 0.7,
       ];
     })
     .flat();
 };
 
-const calculateHypotenuse = (angle) => {
-  return 13 * Math.tan(angle);
+// Angle in degrees
+const calculateYOffset = (angle) => {
+  const radians = (angle * Math.PI) / 180;
+  return StringSpacing * Math.tan(radians);
 };
-
-const stringData = [
-  {
-    id: '1',
-    frequency: 1864.655,
-    length: 80.0,
-    tension: 6.661,
-  },
-  {
-    id: '2',
-    frequency: 1760.0,
-    length: 100.0,
-    tension: 9.272,
-  },
-  {
-    id: '3',
-    frequency: 1567.982,
-    length: 123.0,
-    tension: 11.134,
-  },
-  {
-    id: '4',
-    frequency: 1396.913,
-    length: 145.0,
-    tension: 12.281,
-  },
-  {
-    id: '5',
-    frequency: 1318.51,
-    length: 165.0,
-    tension: 14.168,
-  },
-  {
-    id: '6',
-    frequency: 1174.659,
-    length: 175.0,
-    tension: 12.649,
-  },
-  {
-    id: '7',
-    frequency: 1046.502,
-    length: 190.0,
-    tension: 11.835,
-  },
-  {
-    id: '8',
-    frequency: 932.328,
-    length: 225.0,
-    tension: 16.524,
-  },
-  {
-    id: '9',
-    frequency: 880.0,
-    length: 240.0,
-    tension: 16.749,
-  },
-  {
-    id: '10',
-    frequency: 783.991,
-    length: 260.0,
-    tension: 15.602,
-  },
-  {
-    id: '11',
-    frequency: 698.456,
-    length: 275.0,
-    tension: 13.853,
-  },
-  {
-    id: '12',
-    frequency: 659.255,
-    length: 295.0,
-    tension: 18.55,
-  },
-  {
-    id: '13',
-    frequency: 587.33,
-    length: 315.0,
-    tension: 16.787,
-  },
-  {
-    id: '14',
-    frequency: 523.251,
-    length: 330.0,
-    tension: 14.623,
-  },
-  {
-    id: '15',
-    frequency: 466.164,
-    length: 348.0,
-    tension: 12.907,
-  },
-  {
-    id: '16',
-    frequency: 440.0,
-    length: 370.0,
-    tension: 12.999,
-  },
-  {
-    id: '17',
-    frequency: 391.995,
-    length: 390.0,
-    tension: 14.507,
-  },
-  {
-    id: '18',
-    frequency: 349.228,
-    length: 415.0,
-    tension: 13.038,
-  },
-  {
-    id: '19',
-    frequency: 329.628,
-    length: 445.0,
-    tension: 13.355,
-  },
-  {
-    id: '20',
-    frequency: 293.665,
-    length: 477.0,
-    tension: 15.036,
-  },
-  {
-    id: '21',
-    frequency: 261.626,
-    length: 510.0,
-    tension: 23.057,
-  },
-  {
-    id: '22',
-    frequency: 233.082,
-    length: 545.0,
-    tension: 20.898,
-  },
-  {
-    id: '23',
-    frequency: 220.0,
-    length: 585.0,
-    tension: 21.451,
-  },
-  {
-    id: '24',
-    frequency: 195.998,
-    length: 628.0,
-    tension: 19.621,
-  },
-  {
-    id: '25',
-    frequency: 174.614,
-    length: 675.0,
-    tension: 17.991,
-  },
-  {
-    id: '26',
-    frequency: 164.814,
-    length: 728.0,
-    tension: 18.644,
-  },
-  {
-    id: '27',
-    frequency: 146.832,
-    length: 785.0,
-    tension: 19.955,
-  },
-  {
-    id: '28',
-    frequency: 130.813,
-    length: 850.0,
-    tension: 21.317,
-  },
-  {
-    id: '29',
-    frequency: 116.541,
-    length: 900.0,
-    tension: 22.262,
-  },
-  {
-    id: '30',
-    frequency: 110.0,
-    length: 950.0,
-    tension: 30.21,
-  },
-  {
-    id: '31',
-    frequency: 97.999,
-    length: 1000.0,
-    tension: 29.438,
-  },
-  {
-    id: '32',
-    frequency: 87.307,
-    length: 1045.0,
-    tension: 28.804,
-  },
-  {
-    id: '33',
-    frequency: 82.407,
-    length: 1090.0,
-    tension: 32.0,
-  },
-  {
-    id: '34',
-    frequency: 73.416,
-    length: 1130.0,
-    tension: 30.378,
-  },
-  {
-    id: '35',
-    frequency: 65.406,
-    length: 1168.0,
-    tension: 27.952,
-  },
-  {
-    id: '36',
-    frequency: 58.27,
-    length: 1205.0,
-    tension: 23.613,
-  },
-].reverse();
