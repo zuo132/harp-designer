@@ -1,46 +1,38 @@
-import React, { useState, useRef } from "react";
-import { Stage, Layer, Line, Label, Tag, Text } from "react-konva";
-import { Navbar, Container, Modal, Button, Form } from "react-bootstrap";
-import { stringData } from "./data";
+import React, { useState, useEffect, useRef } from 'react';
+import { Stage, Layer, Line, Label, Tag, Text, Shape } from 'react-konva';
+import Konva from 'konva';
+import { Navbar, Container, Modal, Button, Form } from 'react-bootstrap';
+import { stringData } from './data';
 
-import "bootstrap/dist/css/bootstrap.min.css";
-import "./App.css";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './App.css';
 
 const StringSpacing = 10;
 
 function App() {
-  const [soundBoardAngle, setSoundBoardAngle] = useState(40);
-  const [yOffset, setYOffset] = useState(calculateYOffset(soundBoardAngle));
+  const layer = useRef(null);
+  const tooltip = useRef(null);
+
+  const [soundboardAngle, setSoundboardAngle] = useState(50);
+  const [yOffset, setYOffset] = useState(calculateYOffset(soundboardAngle));
   const [stringId, setStringId] = useState(null);
   const [stringLength, setStringLength] = useState(0);
   const [tension, setTension] = useState(0);
   const [showModal, setShowModal] = useState(false);
-  const [showSoundBoardAngleModal, setShowSoundBoardAngleModal] = useState(false);
+  const [showSoundboardAngleModal, setShowSoundboardAngleModal] = useState(false);
+  const [soundboard, setSoundboard] = useState(null);
 
-  const tooltip = useRef(null);
+  useEffect(() => {
+    if (layer.current) {
+      if (soundboard) Object.values(soundboard).forEach((anchor) => anchor.destroy());
 
-  const handleEnter = (event, string) => {
-    const line = event.target;
-    if (line) line.attrs.strokeWidth = "6";
-    line.parent.draw();
-    tooltip.current
-      .getText()
-      .text(
-        `Frequency: ${string.frequency} Hz, Length: ${string.length} mm, Tension: ${string.tension} pounds`
-      );
-    tooltip.current.position({
-      x: event.evt.layerX,
-      y: event.evt.layerY - 5,
-    });
-    tooltip.current.show();
-  };
-
-  const handleLeave = (event) => {
-    const line = event.target;
-    if (line) line.attrs.strokeWidth = "2";
-    line.parent.draw();
-    tooltip.current.hide();
-  };
+      setSoundboard({
+        start: buildAnchor(xPosition(-4), yPosition(-4, yOffset), layer.current, false),
+        control: buildAnchor(xPosition(18), yPosition(18, yOffset), layer.current),
+        end: buildAnchor(xPosition(39), yPosition(39, yOffset), layer.current, false),
+      });
+    }
+  }, [layer, yOffset]);
 
   const handleClick = (string) => {
     setStringId(string.id);
@@ -56,9 +48,9 @@ function App() {
     setShowModal(false);
   };
 
-  const updateSoundBoardAngle = () => {
-    setYOffset(calculateYOffset(soundBoardAngle));
-    setShowSoundBoardAngleModal(false);
+  const updateSoundboardAngle = () => {
+    setYOffset(calculateYOffset(soundboardAngle));
+    setShowSoundboardAngleModal(false);
   };
 
   return (
@@ -98,7 +90,7 @@ function App() {
           </Button>
         </Modal.Footer>
       </Modal>
-      <Modal show={showSoundBoardAngleModal} onHide={() => setShowSoundBoardAngleModal(false)}>
+      <Modal show={showSoundboardAngleModal} onHide={() => setShowSoundboardAngleModal(false)}>
         <Modal.Body>
           <Form>
             <Form.Group className='mb-3'>
@@ -107,109 +99,156 @@ function App() {
               </Form.Label>
               <Form.Control
                 type='number'
-                value={soundBoardAngle}
-                onChange={(e) => setSoundBoardAngle(e.target.value)}
+                value={soundboardAngle}
+                onChange={(e) => setSoundboardAngle(e.target.value)}
               />
             </Form.Group>
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant='secondary' onClick={() => setShowSoundBoardAngleModal(false)}>
+          <Button variant='secondary' onClick={() => setShowSoundboardAngleModal(false)}>
             Close
           </Button>
-          <Button variant='primary' onClick={updateSoundBoardAngle}>
+          <Button variant='primary' onClick={updateSoundboardAngle}>
             Save
           </Button>
         </Modal.Footer>
       </Modal>
       <Stage width={window.innerWidth * 0.9} height={window.innerHeight * 0.9}>
-        <Layer>
-          {stringData.map((string, index) => {
-            return (
-              <Line
-                key={string.id}
-                className='string'
-                x={xPosition(index)}
-                y={yPosition(index, yOffset)}
-                points={[0, 0, 0, string.length * -0.4]}
-                stroke='blue'
-                onMouseEnter={(e) => handleEnter(e, string)}
-                onMouseLeave={(e) => handleLeave(e)}
-                onClick={() => handleClick(string)}
+        <Layer ref={layer}>
+          {soundboard && (
+            <>
+              {stringData.map((string, index) => {
+                return (
+                  <Shape
+                    key={string.id}
+                    stroke='blue'
+                    strokeWidth={3}
+                    lineCap='round'
+                    sceneFunc={(context, shape) => {
+                      const yPos = getQBezierValue(
+                        (index + 4) / 43,
+                        soundboard.start.y(),
+                        soundboard.control.y(),
+                        soundboard.end.y()
+                      );
+                      context.beginPath();
+                      context.moveTo(xPosition(index), yPos);
+                      context.lineTo(xPosition(index), yPos - string.length * 0.4);
+                      context.fillStrokeShape(shape);
+
+                      shape.on('mouseover', function (event) {
+                        document.body.style.cursor = 'pointer';
+                        this.strokeWidth(5);
+                        tooltip.current
+                          .getText()
+                          .text(
+                            `Frequency: ${string.frequency} Hz, Length: ${string.length} mm, Tension: ${string.tension} pounds`
+                          );
+                        tooltip.current.position({
+                          x: event.evt.layerX,
+                          y: event.evt.layerY - 5,
+                        });
+                        tooltip.current.show();
+                      });
+
+                      shape.on('mouseout', function () {
+                        document.body.style.cursor = 'default';
+                        this.strokeWidth(3);
+                        tooltip.current.hide();
+                      });
+
+                      shape.on('click', function () {
+                        handleClick(string);
+                      });
+                    }}
+                  />
+                );
+              })}
+
+              <Shape
+                stroke='black'
+                strokeWidth={5}
+                lineJoin='round'
+                sceneFunc={(context, shape) => {
+                  context.beginPath();
+                  context.moveTo(soundboard.start.x(), soundboard.start.y());
+                  context.quadraticCurveTo(
+                    soundboard.control.x(),
+                    soundboard.control.y(),
+                    soundboard.end.x(),
+                    soundboard.end.y()
+                  );
+                  context.lineTo(soundboard.end.x(), soundboard.end.y() + 30);
+                  context.lineTo(soundboard.start.x() + 100, soundboard.start.y());
+                  context.closePath();
+                  context.fillStrokeShape(shape);
+
+                  shape.on('mouseover', function () {
+                    document.body.style.cursor = 'pointer';
+                    this.strokeWidth(7);
+                  });
+
+                  shape.on('mouseout', function () {
+                    document.body.style.cursor = 'default';
+                    this.strokeWidth(5);
+                  });
+
+                  shape.on('click', function () {
+                    setShowSoundboardAngleModal(true);
+                  });
+                }}
               />
-            );
-          })}
 
-          <Line
-            x={xPosition(0)}
-            y={0}
-            points={linePoints(yOffset)}
-            stroke='black'
-            strokeWidth={5}
-            lineCap='round'
-            tension={0.5}
-          />
+              <Shape
+                stroke='black'
+                strokeWidth={5}
+                lineCap='round'
+                sceneFunc={(context, shape) => {
+                  context.beginPath();
+                  context.moveTo(
+                    soundboard.start.x(),
+                    yPosition(0, yOffset) - stringData[0].length * 0.4
+                  );
+                  linePoints(soundboard).forEach((point) => {
+                    context.lineTo(point[0], point[1]);
+                  });
+                  context.lineTo(soundboard.end.x(), soundboard.end.y());
+                  context.fillStrokeShape(shape);
+                }}
+              />
 
-          <Line
-            x={xPosition(0)}
-            y={0}
-            points={neckPoints(yOffset)}
-            stroke='black'
-            strokeWidth={5}
-            lineCap='round'
-            tension={0.5}
-          />
+              <Shape
+                stroke='black'
+                strokeWidth={5}
+                lineCap='round'
+                sceneFunc={(context, shape) => {
+                  context.beginPath();
+                  context.moveTo(
+                    soundboard.start.x(),
+                    yPosition(0, yOffset) - stringData[0].length * 0.43
+                  );
+                  neckPoints(soundboard).forEach((point) => {
+                    context.lineTo(point[0], point[1]);
+                  });
+                  context.lineTo(soundboard.end.x(), soundboard.end.y());
+                  context.fillStrokeShape(shape);
+                }}
+              />
+            </>
+          )}
 
           <Line
             x={xPosition(0)}
             y={yPosition(0, yOffset)}
             points={[
-              StringSpacing * -2,
-              yOffset * 2,
-              0,
-              0,
-              StringSpacing * 37,
-              -yOffset * 37,
-              StringSpacing * 38,
-              -yOffset * 37,
-              StringSpacing * 2,
-              yOffset * 2,
-            ]}
-            stroke='black'
-            strokeWidth={5}
-            closed
-            lineJoin='round'
-            lineCap='round'
-            onClick={() => setShowSoundBoardAngleModal(true)}
-            onMouseEnter={(event) => {
-              const line = event.target;
-              if (line) line.attrs.strokeWidth = "10";
-              line.parent.draw();
-              tooltip.current.getText().text(soundBoardAngle + "\xB0");
-              tooltip.current.position({
-                x: event.evt.layerX,
-                y: event.evt.layerY - 5,
-              });
-              tooltip.current.show();
-            }}
-            onMouseLeave={(event) => {
-              const line = event.target;
-              if (line) line.attrs.strokeWidth = "5";
-              line.parent.draw();
-              tooltip.current.hide();
-            }}
-          />
-          <Line
-            x={xPosition(0)}
-            y={yPosition(0, yOffset)}
-            points={[
-              StringSpacing * -2,
-              yOffset * 2,
-              StringSpacing * -5,
-              yOffset * 2,
-              StringSpacing * -5,
+              StringSpacing * -4,
+              yOffset * 4,
+              StringSpacing * -7,
+              yOffset * 4,
+              StringSpacing * -7,
               stringData[0].length * -0.43,
-              StringSpacing * -2,
+              StringSpacing * -4,
               stringData[0].length * -0.43,
             ]}
             stroke='black'
@@ -260,23 +299,28 @@ const yPosition = (index, scale) => {
   return 600 - index * scale;
 };
 
-const linePoints = (scale) => {
-  return stringData
-    .map((string, index) => {
-      return [index * StringSpacing, yPosition(index, scale) - stringData[index].length * 0.4];
-    })
-    .flat();
+const linePoints = (soundboard) => {
+  return stringData.map((string, index) => {
+    const yPos = getQBezierValue(
+      (index + 4) / 43,
+      soundboard.start.y(),
+      soundboard.control.y(),
+      soundboard.end.y()
+    );
+    return [xPosition(index), yPos - stringData[index].length * 0.4];
+  });
 };
 
-const neckPoints = (scale) => {
-  return stringData
-    .map((string, index) => {
-      return [
-        index * StringSpacing,
-        yPosition(index, scale) - stringData[index].length * 0.4 - 35 + index * 0.7,
-      ];
-    })
-    .flat();
+const neckPoints = (soundboard) => {
+  return stringData.map((string, index) => {
+    const yPos = getQBezierValue(
+      (index + 4) / 43,
+      soundboard.start.y(),
+      soundboard.control.y(),
+      soundboard.end.y()
+    );
+    return [xPosition(index), yPos - stringData[index].length * 0.4 - 35 + index * 0.7];
+  });
 };
 
 // Angle in degrees
@@ -284,3 +328,36 @@ const calculateYOffset = (angle) => {
   const radians = (angle * Math.PI) / 180;
   return StringSpacing * Math.tan(radians);
 };
+
+const buildAnchor = (x, y, layer, draggable = true) => {
+  const anchor = new Konva.Circle({
+    x: x,
+    y: y,
+    radius: 20,
+    stroke: '#666',
+    fill: draggable ? '#ddd' : 'gray',
+    strokeWidth: 2,
+    draggable,
+  });
+
+  if (draggable) layer.add(anchor);
+
+  anchor.on('mouseenter', function () {
+    document.body.style.cursor = 'pointer';
+    this.strokeWidth(4);
+  });
+  anchor.on('mouseleave', function () {
+    document.body.style.cursor = 'default';
+    this.strokeWidth(2);
+  });
+  anchor.on('dragmove', function () {
+    this.x(xPosition(18));
+  });
+
+  return anchor;
+};
+
+function getQBezierValue(t, p1, p2, p3) {
+  var iT = 1 - t;
+  return iT * iT * p1 + 2 * iT * t * p2 + t * t * p3;
+}
