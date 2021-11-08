@@ -8,6 +8,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 
 const StringSpacing = 10;
+let strings = [];
 
 function App() {
   const layer = useRef(null);
@@ -16,11 +17,14 @@ function App() {
   const [soundboardAngle, setSoundboardAngle] = useState(50);
   const [yOffset, setYOffset] = useState(calculateYOffset(soundboardAngle));
   const [stringId, setStringId] = useState(null);
+  const [stringFrequency, setStringFrequency] = useState(0);
   const [stringLength, setStringLength] = useState(0);
+  const [stringDiameter, setStringDiameter] = useState(0);
   const [tension, setTension] = useState(0);
   const [showModal, setShowModal] = useState(false);
   const [showSoundboardAngleModal, setShowSoundboardAngleModal] = useState(false);
   const [soundboard, setSoundboard] = useState(null);
+  const [materialDensity, setMaterialDensity] = useState(1.14);
 
   useEffect(() => {
     if (layer.current) {
@@ -36,16 +40,39 @@ function App() {
 
   const handleClick = (string) => {
     setStringId(string.id);
+    setStringFrequency(string.frequency);
     setStringLength(string.length);
+    setStringDiameter(string.diameter);
     setTension(string.tension);
     setShowModal(true);
   };
 
   const updateString = () => {
-    const string = stringData.find((string) => string.id === stringId);
+    const string = strings.find((string) => string.id === stringId);
     string.length = stringLength;
-    string.tension = tension;
+    string.diameter = stringDiameter;
+    string.tension = calculateTension(
+      string.length / 1000,
+      string.frequency,
+      string.diameter / 1000,
+      materialDensity
+    );
     setShowModal(false);
+  };
+
+  const updateMaterial = (density) => {
+    setMaterialDensity(density);
+    strings = strings.map((string) => {
+      return {
+        ...string,
+        tension: calculateTension(
+          string.length / 1000,
+          string.frequency,
+          string.diameter / 1000,
+          density
+        ),
+      };
+    });
   };
 
   const updateSoundboardAngle = () => {
@@ -64,6 +91,10 @@ function App() {
         <Modal.Body>
           <Form>
             <Form.Group className='mb-3'>
+              <Form.Label>Frequency (hz)</Form.Label>
+              <Form.Control type='number' value={stringFrequency} disabled />
+            </Form.Group>
+            <Form.Group className='mb-3'>
               <Form.Label>String Length (mm)</Form.Label>
               <Form.Control
                 type='number'
@@ -71,8 +102,17 @@ function App() {
                 onChange={(e) => setStringLength(e.target.value)}
               />
             </Form.Group>
+
+            <Form.Group className='mb-3'>
+              <Form.Label>Diameter (mm)</Form.Label>
+              <Form.Control
+                type='number'
+                value={stringDiameter}
+                onChange={(e) => setStringDiameter(e.target.value)}
+              />
+            </Form.Group>
             <Form.Group>
-              <Form.Label>Tension (lb)</Form.Label>
+              <Form.Label>Tension (kg)</Form.Label>
               <Form.Control
                 type='number'
                 value={tension}
@@ -114,11 +154,48 @@ function App() {
           </Button>
         </Modal.Footer>
       </Modal>
+      <Container className='mt-3'>
+        <Button
+          className='m-3'
+          variant={materialDensity === 1.14 ? 'primary' : 'secondary'}
+          onClick={() => updateMaterial(1.14)}
+        >
+          Nylon
+        </Button>
+        <Button
+          className='m-3'
+          variant={materialDensity === 8.77 ? 'primary' : 'secondary'}
+          onClick={() => updateMaterial(8.77)}
+        >
+          Brass
+        </Button>
+        <Button
+          className='m-3'
+          variant={materialDensity === 7.8 ? 'primary' : 'secondary'}
+          onClick={() => updateMaterial(7.8)}
+        >
+          Steel
+        </Button>
+        <Button
+          className='m-3'
+          variant={materialDensity === 8.94 ? 'primary' : 'secondary'}
+          onClick={() => updateMaterial(8.94)}
+        >
+          Copper
+        </Button>
+        <Button
+          className='m-3'
+          variant={materialDensity === 8.85 ? 'primary' : 'secondary'}
+          onClick={() => updateMaterial(8.85)}
+        >
+          Phosphor Bronze
+        </Button>
+      </Container>
       <Stage width={window.innerWidth * 0.9} height={window.innerHeight * 0.9}>
         <Layer ref={layer}>
           {soundboard && (
             <>
-              {stringData.map((string, index) => {
+              {strings.map((string, index) => {
                 return (
                   <Shape
                     key={string.id}
@@ -143,7 +220,11 @@ function App() {
                         tooltip.current
                           .getText()
                           .text(
-                            `Frequency: ${string.frequency} Hz, Length: ${string.length} mm, Tension: ${string.tension} pounds`
+                            `Frequency: ${string.frequency} Hz, Length: ${
+                              string.length
+                            } mm, Diameter: ${Number(string.diameter).toFixed(
+                              2
+                            )} mm, Tension: ${string.tension.toFixed(2)} kg`
                           );
                         tooltip.current.position({
                           x: event.evt.layerX,
@@ -208,7 +289,7 @@ function App() {
                   context.beginPath();
                   context.moveTo(
                     soundboard.start.x(),
-                    yPosition(0, yOffset) - stringData[0].length * 0.4
+                    yPosition(0, yOffset) - strings[0].length * 0.4
                   );
                   linePoints(soundboard).forEach((point) => {
                     context.lineTo(point[0], point[1]);
@@ -226,7 +307,7 @@ function App() {
                   context.beginPath();
                   context.moveTo(
                     soundboard.start.x(),
-                    yPosition(0, yOffset) - stringData[0].length * 0.43
+                    yPosition(0, yOffset) - strings[0].length * 0.43
                   );
                   neckPoints(soundboard).forEach((point) => {
                     context.lineTo(point[0], point[1]);
@@ -247,9 +328,9 @@ function App() {
               StringSpacing * -7,
               yOffset * 4,
               StringSpacing * -7,
-              stringData[0].length * -0.43,
+              strings[0].length * -0.43,
               StringSpacing * -4,
-              stringData[0].length * -0.43,
+              strings[0].length * -0.43,
             ]}
             stroke='black'
             strokeWidth={5}
@@ -285,10 +366,13 @@ const mmToMeter = (value) => {
   return value * 1000;
 };
 
-const calculateTension = (string) => {
-  const p = 1150;
-  const mu = (inchToMeter(string.diameter) / 2) ** 2 * Math.PI * p;
-  return (string.frequency / (1 / (2 * mmToMeter(string.length)))) ** 2 * mu * 2.2046;
+const calculateTension = (length, frequency, diameter, p = 1.14) => {
+  // const p = 1150;
+  // const mu = (inchToMeter(string.diameter) / 2) ** 2 * Math.PI * p;
+  // return (string.frequency / (1 / (2 * mmToMeter(string.length)))) ** 2 * mu * 2.2046;
+
+  const mu = (diameter / 2) ** 2 * Math.PI * p * 100;
+  return (2 * length * frequency) ** 2 * mu;
 };
 
 const xPosition = (index) => {
@@ -300,26 +384,26 @@ const yPosition = (index, scale) => {
 };
 
 const linePoints = (soundboard) => {
-  return stringData.map((string, index) => {
+  return strings.map((string, index) => {
     const yPos = getQBezierValue(
       (index + 4) / 43,
       soundboard.start.y(),
       soundboard.control.y(),
       soundboard.end.y()
     );
-    return [xPosition(index), yPos - stringData[index].length * 0.4];
+    return [xPosition(index), yPos - strings[index].length * 0.4];
   });
 };
 
 const neckPoints = (soundboard) => {
-  return stringData.map((string, index) => {
+  return strings.map((string, index) => {
     const yPos = getQBezierValue(
       (index + 4) / 43,
       soundboard.start.y(),
       soundboard.control.y(),
       soundboard.end.y()
     );
-    return [xPosition(index), yPos - stringData[index].length * 0.4 - 35 + index * 0.7];
+    return [xPosition(index), yPos - strings[index].length * 0.4 - 35 + index * 0.7];
   });
 };
 
@@ -361,3 +445,11 @@ function getQBezierValue(t, p1, p2, p3) {
   var iT = 1 - t;
   return iT * iT * p1 + 2 * iT * t * p2 + t * t * p3;
 }
+
+strings = stringData.map((string) => {
+  return {
+    ...string,
+    diameter: inchToMeter(string.diameter) * 1000,
+    tension: calculateTension(string.length / 1000, string.frequency, inchToMeter(string.diameter)),
+  };
+});
