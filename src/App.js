@@ -3,6 +3,7 @@ import { Stage, Layer, Line, Label, Tag, Text, Shape } from 'react-konva';
 import Konva from 'konva';
 import { Navbar, Container, Modal, Button, Form } from 'react-bootstrap';
 import { stringData } from './data';
+import Harp from './components/Harp';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
@@ -79,6 +80,12 @@ function App() {
     setYOffset(calculateYOffset(soundboardAngle));
     setShowSoundboardAngleModal(false);
   };
+
+  return (
+    <div className='App'>
+      <Harp />
+    </div>
+  );
 
   return (
     <div className='App'>
@@ -332,7 +339,7 @@ function App() {
               StringSpacing * -4,
               strings[0].length * -0.43,
             ]}
-            stroke='black'
+            stroke='blue'
             strokeWidth={5}
             closed
             lineJoin='round'
