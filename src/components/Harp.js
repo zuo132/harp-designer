@@ -1,56 +1,116 @@
-import React, { useState } from 'react';
-import { Stage, Layer, Circle } from 'react-konva';
+import React, { useState, useEffect, useRef } from 'react';
+import { useDispatch, useSelector, Provider } from 'react-redux';
+import { Stage, Layer, Label, Tag, Text } from 'react-konva';
 import Body from './Body';
 import Pillar from './Pillar';
 import Neck from './Neck';
 import String from './String';
+import { selectString } from '../actions/stringActions';
+import { stringX, stringY, getQBezierValue } from '../utils';
+import store from '../store';
 
 const Harp = () => {
-  const [stringSpacing, setStringSpacing] = useState(10);
-  const [soundboardAngle, setSoundboardAngle] = useState(50);
-  const [yOffset, setYOffset] = useState(calculateYOffset(soundboardAngle, stringSpacing));
-  const [string, setString] = useState({
-    id: '1',
-    frequency: 1864.655,
-    length: 80.0,
-    tension: 6.661,
-    diameter: 0.025,
-  });
+  const dispatch = useDispatch();
+
+  const { strings, stringSpacing } = useSelector((state) => state.string);
+  const { angle, control } = useSelector((state) => state.soundboard);
+
+  const tooltip = useRef(null);
+
+  const [yOffset, setYOffset] = useState(calculateYOffset(angle, stringSpacing));
+
+  useEffect(() => {
+    setYOffset(calculateYOffset(angle, stringSpacing));
+  }, [angle, stringSpacing]);
 
   return (
     <Stage width={window.innerWidth * 0.9} height={window.innerHeight * 0.9}>
-      <Layer>
-        <Body
-          start={{ x: stringX(-4, stringSpacing), y: stringY(-4, yOffset) }}
-          end={{ x: stringX(39, stringSpacing), y: stringY(39, yOffset) }}
-        />
-        <Pillar
-          start={{ x: stringX(-4, stringSpacing), y: stringY(-4, yOffset) }}
-          end={{ x: stringX(-4, stringSpacing), y: stringY(43, yOffset) }}
-        />
-        <Neck
-          start={{ x: stringX(-4, stringSpacing), y: stringY(43, yOffset) }}
-          end={{ x: stringX(39, stringSpacing), y: stringY(39, yOffset) }}
-        />
-        <String
-          start={{ x: stringX(0, stringSpacing), y: stringY(0, yOffset) }}
-          end={{ x: stringX(0, stringSpacing), y: stringY(0, yOffset) - string.length * 0.4 }}
-          string={string}
-        />
-      </Layer>
+      <Provider store={store}>
+        <Layer
+          onClick={(e) => {
+            dispatch(selectString(e.target.attrs.string.id));
+          }}
+          onMouseOver={(e) => {
+            const string = e.target.attrs.string;
+            document.body.style.cursor = 'pointer';
+            e.target.strokeWidth(5);
+            tooltip.current
+              .getText()
+              .text(
+                `Frequency: ${string.frequency} Hz, Length: ${string.length} mm, Diameter: ${Number(
+                  string.diameter
+                ).toFixed(2)} mm, Tension: ${string.tension.toFixed(2)} kg`
+              );
+            tooltip.current.position({
+              x: e.evt.layerX,
+              y: e.evt.layerY - 5,
+            });
+            tooltip.current.show();
+          }}
+          onMouseOut={(e) => {
+            document.body.style.cursor = 'default';
+            e.target.strokeWidth(3);
+            tooltip.current.hide();
+          }}
+        >
+          {strings.map((string, index) => {
+            const yPos = getQBezierValue(
+              (index + 4) / 43,
+              stringY(-4, yOffset),
+              control?.y,
+              stringY(39, yOffset)
+            );
+
+            return (
+              <String
+                key={string.id}
+                start={{
+                  x: stringX(index, stringSpacing),
+                  y: yPos,
+                }}
+                end={{
+                  x: stringX(index, stringSpacing),
+                  y: yPos - string.length * 0.4,
+                }}
+                string={string}
+              />
+            );
+          })}
+
+          <Label opacity={0.8} visible={false} listening={false} ref={tooltip}>
+            <Tag
+              fill='black'
+              pointerDirection='down'
+              pointerWidth={10}
+              pointerHeight={10}
+              lineJoin='round'
+            />
+            <Text text='' fontSize={18} padding={5} fill='white' />
+          </Label>
+        </Layer>
+
+        <Layer>
+          <Body
+            start={{ x: stringX(-4, stringSpacing), y: stringY(-4, yOffset) }}
+            end={{ x: stringX(39, stringSpacing), y: stringY(39, yOffset) }}
+            dispatch={dispatch}
+          />
+          <Pillar
+            start={{ x: stringX(-4, stringSpacing), y: stringY(-4, yOffset) }}
+            end={{ x: stringX(-4, stringSpacing), y: stringY(43, yOffset) }}
+          />
+          <Neck
+            start={{ x: stringX(-4, stringSpacing), y: stringY(43, yOffset) }}
+            end={{ x: stringX(39, stringSpacing), y: stringY(39, yOffset) }}
+            yOffset={yOffset}
+          />
+        </Layer>
+      </Provider>
     </Stage>
   );
 };
 
 export default Harp;
-
-const stringX = (index, stringSpacing) => {
-  return index * stringSpacing + 500;
-};
-
-const stringY = (index, scale) => {
-  return 600 - index * scale;
-};
 
 // Angle in degrees
 const calculateYOffset = (angle, stringSpacing) => {

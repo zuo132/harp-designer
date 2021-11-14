@@ -1,9 +1,12 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import { Shape } from 'react-konva';
+import { stringX, stringY, getQBezierValue } from '../utils';
 
-const strings = [];
+const Neck = ({ start, end, yOffset }) => {
+  const { strings, stringSpacing } = useSelector((state) => state.string);
+  const { control } = useSelector((state) => state.soundboard);
 
-const Neck = ({ start, end, control }) => {
   return (
     <>
       <Shape
@@ -12,13 +15,19 @@ const Neck = ({ start, end, control }) => {
         lineCap='round'
         sceneFunc={(context, shape) => {
           context.beginPath();
+          context.moveTo(start.x, start.y + 30);
+          neckPlot(strings, stringY(-4, yOffset), end, control, stringSpacing).forEach((point) => {
+            context.lineTo(point[0], point[1]);
+          });
+          context.lineTo(end.x, end.y);
           context.moveTo(start.x, start.y);
-          linePoints(start, end, control).forEach((point) => {
+          neckPlot2(strings, stringY(-4, yOffset), end, control, stringSpacing).forEach((point) => {
             context.lineTo(point[0], point[1]);
           });
           context.lineTo(end.x, end.y);
           context.fillStrokeShape(shape);
         }}
+        listening={false}
       />
     </>
   );
@@ -26,16 +35,18 @@ const Neck = ({ start, end, control }) => {
 
 export default Neck;
 
-const linePoints = (start, end, control) => {
-  return strings.map((string, index) => {
-    const yPos = getQBezierValue((index + 4) / 43, start.y, control.y, end.y);
-    return [xPosition(index), yPos - strings[index].length * 0.4];
+const neckPlot = (strings, start, end, control, stringSpacing) => {
+  const points = strings.map((string, index) => {
+    const yPos = getQBezierValue((index + 4) / 43, start, control?.y, end.y);
+    return [stringX(index, stringSpacing), yPos - string.length * 0.4];
   });
+
+  return points;
 };
 
-function getQBezierValue(t, p1, p2, p3) {
-  var iT = 1 - t;
-  return iT * iT * p1 + 2 * iT * t * p2 + t * t * p3;
-}
-
-const xPosition = () => 123;
+const neckPlot2 = (strings, start, end, control, stringSpacing) => {
+  return strings.map((string, index) => {
+    const yPos = getQBezierValue((index + 4) / 43, start, control?.y, end.y);
+    return [stringX(index, stringSpacing), yPos - string.length * 0.4 - 35 + index * 0.7];
+  });
+};

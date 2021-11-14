@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Stage, Layer, Line, Label, Tag, Text, Shape } from 'react-konva';
 import Konva from 'konva';
-import { Navbar, Container, Modal, Button, Form } from 'react-bootstrap';
+import { Navbar, Container, Modal, Button, Form, Row, Col } from 'react-bootstrap';
 import { stringData } from './data';
+import OptionsPanel from './components/OptionsPanel';
 import Harp from './components/Harp';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -83,7 +84,19 @@ function App() {
 
   return (
     <div className='App'>
-      <Harp />
+      <Navbar className='mb-3' bg='dark' variant='dark'>
+        <Container>
+          <Navbar.Brand>Harp Designer</Navbar.Brand>
+        </Container>
+      </Navbar>
+      <Row>
+        <Col md={3}>
+          <OptionsPanel />
+        </Col>
+        <Col md={9}>
+          <Harp />
+        </Col>
+      </Row>
     </div>
   );
 

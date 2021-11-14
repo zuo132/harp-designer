@@ -12,6 +12,7 @@ const Pillar = ({ start, end, width = 50 }) => {
       closed
       lineJoin='round'
       lineCap='round'
+      listening={false}
     />
   );
 };

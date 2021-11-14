@@ -1,8 +1,13 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Shape, Circle } from 'react-konva';
+import { updateControlPosition } from '../actions/soundboardActions';
 
-const Body = ({ start, end }) => {
+const Body = ({ start, end, dispatch }) => {
   const control = useRef(null);
+
+  useEffect(() => {
+    dispatch(updateControlPosition({ x: control.current.x(), y: control.current.y() }));
+  }, [control]);
 
   return (
     <>
@@ -19,6 +24,7 @@ const Body = ({ start, end }) => {
           context.closePath();
           context.fillStrokeShape(shape);
         }}
+        listening={false}
       />
 
       <Circle
@@ -40,6 +46,9 @@ const Body = ({ start, end }) => {
         }}
         onDragMove={function () {
           this.x((start.x + end.x) / 2);
+        }}
+        onDragEnd={function () {
+          dispatch(updateControlPosition({ x: this.x(), y: this.y() }));
         }}
       />
     </>
