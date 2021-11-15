@@ -1,9 +1,9 @@
 import { createReducer } from '@reduxjs/toolkit';
 import { stringData } from '../data';
-import { inchToMeter, calculateTension } from '../utils';
+import { inchToMeter, calculateTension, addNoteName } from '../utils';
 
 const initialState = {
-  strings: stringData.map((string) => {
+  strings: addNoteName(stringData).map((string) => {
     return {
       ...string,
       diameter: inchToMeter(string.diameter) * 1000,
@@ -17,6 +17,7 @@ const initialState = {
   selectedString: null,
   stringSpacing: 10,
   materialDensity: 1.14,
+  tuning: 'C Major',
 };
 
 const stringReducer = createReducer(initialState, {
@@ -44,7 +45,23 @@ const stringReducer = createReducer(initialState, {
     });
 
     state.materialDensity = payload.density;
-    state.selectedString = state.strings.find((string) => string.id === state.selectedString.id);
+    if (state.selectedString)
+      state.selectedString = state.strings.find((string) => string.id === state.selectedString.id);
+  },
+
+  UPDATE_TUNING: (state, { payload }) => {
+    state.strings = addNoteName(state.strings, payload.tuning);
+    state.strings.forEach((string) => {
+      string.tension = calculateTension(
+        string.length / 1000,
+        string.frequency,
+        string.diameter / 1000,
+        state.materialDensity
+      );
+    });
+    state.tuning = payload.tuning;
+    if (state.selectedString)
+      state.selectedString = state.strings.find((string) => string.id === state.selectedString.id);
   },
 });
 

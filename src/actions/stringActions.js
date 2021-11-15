@@ -11,3 +11,7 @@ export const updateString = (stringId, params) => async (dispatch) => {
 export const updateStringMaterialDensity = (density) => async (dispatch) => {
   dispatch(createAction('UPDATE_STRING_MATERIAL_DENSITY')({ density }));
 };
+
+export const updateTuning = (tuning) => async (dispatch) => {
+  dispatch(createAction('UPDATE_TUNING')({ tuning }));
+};

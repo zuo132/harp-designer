@@ -73,6 +73,13 @@ const Harp = () => {
                   y: yPos - string.length * 0.4,
                 }}
                 string={string}
+                stroke={
+                  string.note.charAt(0) === 'C' && string.note.length === 2
+                    ? 'red'
+                    : string.note.charAt(0) === 'F' && string.note.length === 2
+                    ? 'blue'
+                    : 'white'
+                }
               />
             );
           })}

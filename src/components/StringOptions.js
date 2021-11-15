@@ -44,7 +44,8 @@ const StringOptions = () => {
 
   return (
     <Form onSubmit={handleSubmit}>
-      <h5>String</h5>
+      <h5>String ({selectedString.note})</h5>
+
       <Form.Group className='mb-1'>
         <Form.Label>Frequency</Form.Label>
         <InputGroup>
