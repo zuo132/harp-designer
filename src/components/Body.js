@@ -1,13 +1,21 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Shape, Circle } from 'react-konva';
 import { updateControlPosition } from '../actions/soundboardActions';
 
 const Body = ({ start, end, dispatch }) => {
   const control = useRef(null);
+  const [cachedEnd, setCachedEnd] = useState(end);
 
   useEffect(() => {
     dispatch(updateControlPosition({ x: control.current.x(), y: control.current.y() }));
   }, [control]);
+
+  useEffect(() => {
+    if (end.y !== cachedEnd.y) {
+      dispatch(updateControlPosition({ x: control.current.x(), y: control.current.y() }));
+      setCachedEnd(end);
+    }
+  }, [control, end]);
 
   return (
     <>

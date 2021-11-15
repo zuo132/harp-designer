@@ -97,10 +97,16 @@ const Harp = () => {
           />
           <Pillar
             start={{ x: stringX(-4, stringSpacing), y: stringY(-4, yOffset) }}
-            end={{ x: stringX(-4, stringSpacing), y: stringY(43, yOffset) }}
+            end={{
+              x: stringX(-4, stringSpacing),
+              y: stringY(-4, yOffset) - strings[0].length * 0.48,
+            }}
           />
           <Neck
-            start={{ x: stringX(-4, stringSpacing), y: stringY(43, yOffset) }}
+            start={{
+              x: stringX(-4, stringSpacing),
+              y: stringY(-4, yOffset) - strings[0].length * 0.48,
+            }}
             end={{ x: stringX(39, stringSpacing), y: stringY(39, yOffset) }}
             yOffset={yOffset}
           />
