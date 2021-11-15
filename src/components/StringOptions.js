@@ -3,10 +3,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Form, InputGroup, Button } from 'react-bootstrap';
 import styled from 'styled-components';
 import { updateString } from '../actions/stringActions';
+import { calculateTension } from '../utils';
 
 const StringOptions = () => {
   const dispatch = useDispatch();
-  const { selectedString } = useSelector((state) => state.string);
+  const { selectedString, materialDensity } = useSelector((state) => state.string);
 
   const [length, setLength] = useState(0);
   const [diameter, setDiameter] = useState(0);
@@ -22,7 +23,21 @@ const StringOptions = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(updateString(selectedString.id, { length, diameter, tension }));
+    const newTension = calculateTension(
+      length / 1000,
+      selectedString.frequency,
+      diameter / 1000,
+      materialDensity
+    );
+
+    dispatch(
+      updateString(selectedString.id, {
+        length,
+        diameter,
+        tension: newTension,
+      })
+    );
+    setTension(newTension);
   };
 
   if (!selectedString) return null;

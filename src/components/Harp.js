@@ -76,17 +76,6 @@ const Harp = () => {
               />
             );
           })}
-
-          <Label opacity={0.8} visible={false} listening={false} ref={tooltip}>
-            <Tag
-              fill='black'
-              pointerDirection='down'
-              pointerWidth={10}
-              pointerHeight={10}
-              lineJoin='round'
-            />
-            <Text text='' fontSize={18} padding={5} fill='white' />
-          </Label>
         </Layer>
 
         <Layer>
@@ -110,6 +99,16 @@ const Harp = () => {
             end={{ x: stringX(39, stringSpacing), y: stringY(39, yOffset) }}
             yOffset={yOffset}
           />
+          <Label opacity={0.8} visible={false} listening={false} ref={tooltip}>
+            <Tag
+              fill='black'
+              pointerDirection='down'
+              pointerWidth={10}
+              pointerHeight={10}
+              lineJoin='round'
+            />
+            <Text text='' fontSize={18} padding={5} fill='white' />
+          </Label>
         </Layer>
       </Provider>
     </Stage>

@@ -7,3 +7,7 @@ export const selectString = (stringId) => async (dispatch) => {
 export const updateString = (stringId, params) => async (dispatch) => {
   dispatch(createAction('UPDATE_STRING')({ stringId, params }));
 };
+
+export const updateStringMaterialDensity = (density) => async (dispatch) => {
+  dispatch(createAction('UPDATE_STRING_MATERIAL_DENSITY')({ density }));
+};

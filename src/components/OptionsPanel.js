@@ -3,6 +3,7 @@ import { Container } from 'react-bootstrap';
 import SoundboardOptions from './SoundboardOptions';
 import PillarOptions from './PillarOptions';
 import TuningOptions from './TuningOptions';
+import StringMaterialOptions from './StringMaterialOptions';
 import StringOptions from './StringOptions';
 
 const OptionsPanel = () => {
@@ -11,6 +12,7 @@ const OptionsPanel = () => {
       <SoundboardOptions />
       <PillarOptions />
       <TuningOptions />
+      <StringMaterialOptions />
       <StringOptions />
     </Container>
   );
