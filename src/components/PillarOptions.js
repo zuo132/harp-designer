@@ -1,7 +1,8 @@
-import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Button } from 'react-bootstrap';
-import { updatePillarShape } from '../actions/pillarAction';
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import styled from "styled-components";
+import { Button } from "react-bootstrap";
+import { updatePillarShape } from "../actions/pillarAction";
 
 const PillarOptions = () => {
   const dispatch = useDispatch();
@@ -16,22 +17,24 @@ const PillarOptions = () => {
     <>
       <h5>Pillar Shape</h5>
 
-      <Button
-        className='mx-3'
-        variant={shape === 'Straight' ? 'primary' : 'secondary'}
-        onClick={() => updateShape('Straight')}
+      <StyledButton
+        variant={shape === "Straight" ? "primary" : "secondary"}
+        onClick={() => updateShape("Straight")}
       >
         Straight
-      </Button>
-      <Button
-        className='mx-3'
-        variant={shape === 'D Shape' ? 'primary' : 'secondary'}
-        onClick={() => updateShape('D Shape')}
+      </StyledButton>
+      <StyledButton
+        variant={shape === "D Shape" ? "primary" : "secondary"}
+        onClick={() => updateShape("D Shape")}
       >
         D Shape
-      </Button>
+      </StyledButton>
     </>
   );
 };
 
 export default PillarOptions;
+
+const StyledButton = styled(Button)`
+  margin-right: 1rem;
+`;

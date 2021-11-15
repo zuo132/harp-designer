@@ -1,15 +1,15 @@
-import React from 'react';
-import { Container } from 'react-bootstrap';
-import styled from 'styled-components';
-import SoundboardOptions from './SoundboardOptions';
-import PillarOptions from './PillarOptions';
-import TuningOptions from './TuningOptions';
-import StringMaterialOptions from './StringMaterialOptions';
-import StringOptions from './StringOptions';
+import React from "react";
+import { Container } from "react-bootstrap";
+import styled from "styled-components";
+import SoundboardOptions from "./SoundboardOptions";
+import PillarOptions from "./PillarOptions";
+import TuningOptions from "./TuningOptions";
+import StringMaterialOptions from "./StringMaterialOptions";
+import StringOptions from "./StringOptions";
 
 const OptionsPanel = () => {
   return (
-    <Container>
+    <MainContainer>
       <OptionsContainer>
         <SoundboardOptions />
       </OptionsContainer>
@@ -29,11 +29,16 @@ const OptionsPanel = () => {
       <OptionsContainer>
         <StringOptions />
       </OptionsContainer>
-    </Container>
+    </MainContainer>
   );
 };
 
 export default OptionsPanel;
+
+const MainContainer = styled(Container)`
+  max-height: 90vh;
+  overflow: auto;
+`;
 
 const OptionsContainer = styled.div`
   margin-bottom: 1.3rem;
