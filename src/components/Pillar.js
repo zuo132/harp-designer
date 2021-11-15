@@ -1,7 +1,39 @@
 import React from 'react';
-import { Line } from 'react-konva';
+import { useSelector } from 'react-redux';
+import { Line, Shape } from 'react-konva';
 
-const Pillar = ({ start, end, width = 50 }) => {
+const Pillar = ({ start, end, dStart, dEnd, width = 50 }) => {
+  const { shape } = useSelector((state) => state.pillar);
+
+  if (shape === 'D Shape') {
+    return (
+      <Shape
+        stroke='black'
+        strokeWidth={5}
+        lineCap='round'
+        sceneFunc={(context, shape) => {
+          context.beginPath();
+          context.moveTo(start.x, start.y);
+          context.quadraticCurveTo(
+            (start.x + end.x) / 2 - 100,
+            (start.y + end.y) / 2,
+            end.x,
+            end.y + 30
+          );
+          context.moveTo(dStart.x, dStart.y);
+          context.quadraticCurveTo(
+            (dStart.x + dEnd.x) / 2 - 100,
+            (dStart.y + dEnd.y) / 2,
+            dEnd.x,
+            dEnd.y + 30
+          );
+          context.fillStrokeShape(shape);
+        }}
+        listening={false}
+      />
+    );
+  }
+
   return (
     <Line
       x={0}

@@ -26,6 +26,25 @@ const Harp = () => {
   return (
     <Stage width={window.innerWidth * 0.9} height={window.innerHeight * 0.9}>
       <Provider store={store}>
+        <Layer>
+          <Pillar
+            start={{ x: stringX(-4, stringSpacing), y: stringY(-4, yOffset) }}
+            end={{
+              x: stringX(-4, stringSpacing),
+              y: stringY(-4, yOffset) - strings[0].length * 0.48,
+            }}
+            dStart={{
+              x: stringX(0, stringSpacing),
+              y: getQBezierValue(4 / 43, stringY(-4, yOffset), control?.y, stringY(39, yOffset)),
+            }}
+            dEnd={{
+              x: stringX(3, stringSpacing),
+              y:
+                getQBezierValue(7 / 43, stringY(-4, yOffset), control?.y, stringY(39, yOffset)) -
+                strings[3].length * 0.425,
+            }}
+          />
+        </Layer>
         <Layer
           onClick={(e) => {
             dispatch(selectString(e.target.attrs.string.id));
@@ -90,13 +109,6 @@ const Harp = () => {
             start={{ x: stringX(-4, stringSpacing), y: stringY(-4, yOffset) }}
             end={{ x: stringX(39, stringSpacing), y: stringY(39, yOffset) }}
             dispatch={dispatch}
-          />
-          <Pillar
-            start={{ x: stringX(-4, stringSpacing), y: stringY(-4, yOffset) }}
-            end={{
-              x: stringX(-4, stringSpacing),
-              y: stringY(-4, yOffset) - strings[0].length * 0.48,
-            }}
           />
           <Neck
             start={{

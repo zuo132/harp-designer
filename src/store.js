@@ -3,8 +3,13 @@ import thunk from 'redux-thunk';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import stringReducer from './reducers/stringReducer';
 import soundboardReducer from './reducers/soundboardReducer';
+import pillarReducer from './reducers/pillarReducer';
 
-const reducers = combineReducers({ string: stringReducer, soundboard: soundboardReducer });
+const reducers = combineReducers({
+  string: stringReducer,
+  soundboard: soundboardReducer,
+  pillar: pillarReducer,
+});
 
 const initialState = {};
 

@@ -21,6 +21,8 @@ const Neck = ({ start, end, yOffset }) => {
           });
           context.lineTo(end.x, end.y);
           context.moveTo(start.x, start.y);
+          context.lineTo(start.x, start.y + 30);
+          context.moveTo(start.x, start.y);
           neckPlot2(strings, stringY(-4, yOffset), end, control, stringSpacing).forEach((point) => {
             context.lineTo(point[0], point[1]);
           });

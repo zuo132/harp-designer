@@ -8,14 +8,14 @@ const Body = ({ start, end, dispatch }) => {
 
   useEffect(() => {
     dispatch(updateControlPosition({ x: control.current.x(), y: control.current.y() }));
-  }, [control]);
+  }, [control, dispatch]);
 
   useEffect(() => {
     if (end.y !== cachedEnd.y) {
       dispatch(updateControlPosition({ x: control.current.x(), y: control.current.y() }));
       setCachedEnd(end);
     }
-  }, [control, end]);
+  }, [control, dispatch, end]);
 
   return (
     <>
