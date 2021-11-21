@@ -12,7 +12,12 @@ const Body = ({ start, end, dispatch }) => {
 
   useEffect(() => {
     if (end.y !== cachedEnd.y) {
-      dispatch(updateControlPosition({ x: control.current.x(), y: control.current.y() }));
+      dispatch(
+        updateControlPosition({
+          x: control.current.x(),
+          y: control.current.y(),
+        })
+      );
       setCachedEnd(end);
     }
   }, [control, dispatch, end]);
@@ -56,7 +61,12 @@ const Body = ({ start, end, dispatch }) => {
           this.x((start.x + end.x) / 2);
         }}
         onDragEnd={function () {
-          dispatch(updateControlPosition({ x: this.x(), y: this.y() }));
+          dispatch(
+            updateControlPosition({
+              x: this.x(),
+              y: this.y(),
+            })
+          );
         }}
       />
     </>

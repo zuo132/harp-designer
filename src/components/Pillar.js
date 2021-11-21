@@ -2,7 +2,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { Line, Shape } from 'react-konva';
 
-const Pillar = ({ start, end, dStart, dEnd, width = 50 }) => {
+const Pillar = ({ start, end, dStart, dEnd, width = 30 }) => {
   const { shape } = useSelector((state) => state.pillar);
 
   if (shape === 'D Shape') {
@@ -18,14 +18,14 @@ const Pillar = ({ start, end, dStart, dEnd, width = 50 }) => {
             (start.x + end.x) / 2 - 100,
             (start.y + end.y) / 2,
             end.x,
-            end.y + 30
+            end.y + 50
           );
           context.moveTo(dStart.x, dStart.y);
           context.quadraticCurveTo(
             (dStart.x + dEnd.x) / 2 - 100,
             (dStart.y + dEnd.y) / 2,
             dEnd.x,
-            dEnd.y + 30
+            dEnd.y + 15
           );
           context.fillStrokeShape(shape);
         }}

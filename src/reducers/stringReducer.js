@@ -14,6 +14,7 @@ const initialState = {
       ),
     };
   }),
+  defaultStringLengths: stringData.map((string) => string.length),
   selectedString: null,
   stringSpacing: 10,
   materialDensity: 1.14,

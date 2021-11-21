@@ -12,7 +12,7 @@ import store from '../store';
 const Harp = () => {
   const dispatch = useDispatch();
 
-  const { strings, stringSpacing } = useSelector((state) => state.string);
+  const { strings, defaultStringLengths, stringSpacing } = useSelector((state) => state.string);
   const { angle, control } = useSelector((state) => state.soundboard);
 
   const tooltip = useRef(null);
@@ -31,18 +31,26 @@ const Harp = () => {
             start={{ x: stringX(-4, stringSpacing), y: stringY(-4, yOffset) }}
             end={{
               x: stringX(-4, stringSpacing),
-              y: stringY(-4, yOffset) - strings[0].length * 0.48,
+              y: stringY(-4, yOffset) - defaultStringLengths[0] * 0.48,
             }}
             dStart={{
-              x: stringX(0, stringSpacing),
-              y: getQBezierValue(4 / 43, stringY(-4, yOffset), control?.y, stringY(39, yOffset)),
+              x: stringX(-2, stringSpacing),
+              y: getQBezierValue(2 / 43, stringY(-4, yOffset), control?.y, stringY(39, yOffset)),
             }}
             dEnd={{
-              x: stringX(3, stringSpacing),
+              x: stringX(2, stringSpacing),
               y:
-                getQBezierValue(7 / 43, stringY(-4, yOffset), control?.y, stringY(39, yOffset)) -
-                strings[3].length * 0.425,
+                getQBezierValue(6 / 43, stringY(-4, yOffset), control?.y, stringY(39, yOffset)) -
+                strings[2].length * 0.4,
             }}
+          />
+          <Neck
+            start={{
+              x: stringX(-4, stringSpacing),
+              y: stringY(-4, yOffset) - defaultStringLengths[0] * 0.48,
+            }}
+            end={{ x: stringX(39, stringSpacing), y: stringY(39, yOffset) }}
+            yOffset={yOffset}
           />
         </Layer>
         <Layer
@@ -109,14 +117,6 @@ const Harp = () => {
             start={{ x: stringX(-4, stringSpacing), y: stringY(-4, yOffset) }}
             end={{ x: stringX(39, stringSpacing), y: stringY(39, yOffset) }}
             dispatch={dispatch}
-          />
-          <Neck
-            start={{
-              x: stringX(-4, stringSpacing),
-              y: stringY(-4, yOffset) - strings[0].length * 0.48,
-            }}
-            end={{ x: stringX(39, stringSpacing), y: stringY(39, yOffset) }}
-            yOffset={yOffset}
           />
           <Label opacity={0.8} visible={false} listening={false} ref={tooltip}>
             <Tag
