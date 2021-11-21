@@ -17,6 +17,7 @@ const initialState = {
   defaultStringLengths: stringData.map((string) => string.length),
   selectedString: null,
   stringSpacing: 10,
+  stringCount: stringData.length,
   materialDensity: 1.14,
   tuning: 'C Major',
 };
