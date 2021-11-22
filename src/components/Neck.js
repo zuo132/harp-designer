@@ -4,7 +4,7 @@ import { Line } from 'react-konva';
 import { stringX, stringY, getQBezierValue } from '../utils';
 
 const Neck = ({ start, end, yOffset }) => {
-  const { defaultStringLengths, stringSpacing } = useSelector((state) => state.string);
+  const { strings, defaultStringLengths, stringSpacing } = useSelector((state) => state.string);
   const { control } = useSelector((state) => state.soundboard);
   const { shape } = useSelector((state) => state.pillar);
 

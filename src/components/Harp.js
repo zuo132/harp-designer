@@ -5,6 +5,7 @@ import Body from './Body';
 import Pillar from './Pillar';
 import Neck from './Neck';
 import String from './String';
+import Measurements from './Measurements';
 import { selectString } from '../actions/stringActions';
 import { stringX, stringY, getQBezierValue } from '../utils';
 import store from '../store';
@@ -118,6 +119,11 @@ const Harp = () => {
             end={{ x: stringX(39, stringSpacing), y: stringY(39, yOffset) }}
             dispatch={dispatch}
           />
+
+          <Measurements yOffset={yOffset} />
+        </Layer>
+
+        <Layer>
           <Label opacity={0.8} visible={false} listening={false} ref={tooltip}>
             <Tag
               fill='black'

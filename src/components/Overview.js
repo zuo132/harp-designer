@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useSelector } from 'react-redux';
-import { ListGroup } from 'react-bootstrap';
 
 const Overview = () => {
   const { strings, stringCount } = useSelector((state) => state.string);
