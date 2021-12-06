@@ -18,7 +18,8 @@ const Overview = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (note !== lowestNote) dispatch(updateLowestNote(note));
-    if (numberOfStrings !== stringNumber) dispatch(updateStringNumber(parseInt(numberOfStrings)));
+    if (parseInt(numberOfStrings) !== stringNumber)
+      dispatch(updateStringNumber(parseInt(numberOfStrings)));
   };
 
   return (
