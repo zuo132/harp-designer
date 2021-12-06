@@ -13,7 +13,9 @@ import store from '../store';
 const Harp = () => {
   const dispatch = useDispatch();
 
-  const { strings, defaultStringLengths, stringSpacing } = useSelector((state) => state.string);
+  const { strings, defaultStringLengths, stringSpacing, stringNumber } = useSelector(
+    (state) => state.string
+  );
   const { angle, control } = useSelector((state) => state.soundboard);
 
   const tooltip = useRef(null);
@@ -25,7 +27,7 @@ const Harp = () => {
   }, [angle, stringSpacing]);
 
   return (
-    <Stage width={window.innerWidth * 0.9} height={window.innerHeight * 0.9}>
+    <Stage width={window.innerWidth * 0.9} height={window.innerHeight * 0.9} offsetY={-250}>
       <Provider store={store}>
         <Layer>
           <Pillar
@@ -36,12 +38,22 @@ const Harp = () => {
             }}
             dStart={{
               x: stringX(-2, stringSpacing),
-              y: getQBezierValue(2 / 43, stringY(-4, yOffset), control?.y, stringY(39, yOffset)),
+              y: getQBezierValue(
+                2 / (stringNumber + 7),
+                stringY(-4, yOffset),
+                control?.y,
+                stringY(stringNumber + 3, yOffset)
+              ),
             }}
             dEnd={{
               x: stringX(2, stringSpacing),
               y:
-                getQBezierValue(6 / 43, stringY(-4, yOffset), control?.y, stringY(39, yOffset)) -
+                getQBezierValue(
+                  6 / (stringNumber + 7),
+                  stringY(-4, yOffset),
+                  control?.y,
+                  stringY(stringNumber + 3, yOffset)
+                ) -
                 strings[2].length * 0.4,
             }}
           />
@@ -50,7 +62,10 @@ const Harp = () => {
               x: stringX(-4, stringSpacing),
               y: stringY(-4, yOffset) - defaultStringLengths[0] * 0.48,
             }}
-            end={{ x: stringX(39, stringSpacing), y: stringY(39, yOffset) }}
+            end={{
+              x: stringX(stringNumber + 3, stringSpacing),
+              y: stringY(stringNumber + 3, yOffset),
+            }}
             yOffset={yOffset}
           />
         </Layer>
@@ -83,10 +98,10 @@ const Harp = () => {
         >
           {strings.map((string, index) => {
             const yPos = getQBezierValue(
-              (index + 4) / 43,
+              (index + 4) / (stringNumber + 7),
               stringY(-4, yOffset),
               control?.y,
-              stringY(39, yOffset)
+              stringY(stringNumber + 3, yOffset)
             );
 
             return (
@@ -116,7 +131,10 @@ const Harp = () => {
         <Layer>
           <Body
             start={{ x: stringX(-4, stringSpacing), y: stringY(-4, yOffset) }}
-            end={{ x: stringX(39, stringSpacing), y: stringY(39, yOffset) }}
+            end={{
+              x: stringX(stringNumber + 3, stringSpacing),
+              y: stringY(stringNumber + 3, yOffset),
+            }}
             dispatch={dispatch}
           />
 
@@ -124,7 +142,7 @@ const Harp = () => {
         </Layer>
 
         <Layer>
-          <Label opacity={0.8} visible={false} listening={false} ref={tooltip}>
+          <Label opacity={0.8} visible={false} listening={false} ref={tooltip} offsetY={250}>
             <Tag
               fill='black'
               pointerDirection='down'

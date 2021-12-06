@@ -4,7 +4,9 @@ import { Arrow, Label, Tag, Text } from 'react-konva';
 import { stringX, stringY } from '../utils';
 
 const Measurements = ({ yOffset }) => {
-  const { defaultStringLengths, stringSpacing } = useSelector((state) => state.string);
+  const { defaultStringLengths, stringSpacing, stringNumber } = useSelector(
+    (state) => state.string
+  );
 
   return (
     <>
@@ -56,7 +58,7 @@ const Measurements = ({ yOffset }) => {
         points={[
           stringX(-4, stringSpacing) + stringX(-4, stringSpacing) / 2 + 50,
           stringY(-4, yOffset) - defaultStringLengths[0] * 0.48 - 30,
-          stringX(39, stringSpacing) + 20,
+          stringX(stringNumber + 3, stringSpacing) + 20,
           stringY(-4, yOffset) - defaultStringLengths[0] * 0.48 - 30,
         ]}
         stroke='blue'
@@ -87,7 +89,9 @@ const Measurements = ({ yOffset }) => {
         <Text
           text={
             Math.round(
-              ((stringX(39, stringSpacing) + 20 - (stringX(-4, stringSpacing) - 30)) / 0.4) * 100
+              ((stringX(stringNumber + 3, stringSpacing) + 20 - (stringX(-4, stringSpacing) - 30)) /
+                0.4) *
+                100
             ) /
               100 +
             ' mm'

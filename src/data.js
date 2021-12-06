@@ -251,4 +251,4 @@ export const stringData = [
     tension: 23.613,
     diameter: 0.1,
   },
-].reverse();
+];

@@ -15,3 +15,11 @@ export const updateStringMaterialDensity = (density) => async (dispatch) => {
 export const updateTuning = (tuning) => async (dispatch) => {
   dispatch(createAction('UPDATE_TUNING')({ tuning }));
 };
+
+export const updateStringNumber = (stringNumber) => async (dispatch) => {
+  dispatch(createAction('UPDATE_STRING_NUMBER')({ stringNumber }));
+};
+
+export const updateLowestNote = (lowestNote) => async (dispatch) => {
+  dispatch(createAction('UPDATE_LOWEST_NOTE')({ lowestNote }));
+};

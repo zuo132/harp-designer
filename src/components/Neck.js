@@ -1,10 +1,12 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { Line, Shape } from 'react-konva';
+import { Line } from 'react-konva';
 import { stringX, stringY, getQBezierValue } from '../utils';
 
 const Neck = ({ start, end, yOffset }) => {
-  const { strings, defaultStringLengths, stringSpacing } = useSelector((state) => state.string);
+  const { strings, defaultStringLengths, stringSpacing, stringNumber } = useSelector(
+    (state) => state.string
+  );
   const { control } = useSelector((state) => state.soundboard);
   const { shape } = useSelector((state) => state.pillar);
 
@@ -26,7 +28,8 @@ const Neck = ({ start, end, yOffset }) => {
                 control.y,
                 end.y,
                 stringSpacing,
-                -40
+                -40,
+                stringNumber
               ),
               end.x,
               end.y - 30,
@@ -55,7 +58,8 @@ const Neck = ({ start, end, yOffset }) => {
                 control.y,
                 end.y,
                 stringSpacing,
-                10
+                10,
+                stringNumber
               ),
               end.x,
               end.y,
@@ -134,38 +138,56 @@ const Neck = ({ start, end, yOffset }) => {
 
 export default Neck;
 
-const neckPoints = (stringLengths, start, control, end, stringSpacing, offset) => {
+const neckPoints = (stringLengths, start, control, end, stringSpacing, offset, stringNumber) => {
   const points = stringLengths.map((length, index) => {
-    const yPos = getQBezierValue((index + 4) / 43, start, control, end);
+    const yPos = getQBezierValue((index + 4) / (stringNumber + 7), start, control, end);
     return [stringX(index, stringSpacing), yPos - length * 0.4 + offset];
   });
 
   return points;
 };
 
-const samplePoints = (stringLengths, start, control, end, stringSpacing, offset) => {
-  const points = neckPoints(stringLengths, start, control, end, stringSpacing, offset);
-  const samples = [];
+// const samplePoints = (stringLengths, start, control, end, stringSpacing, offset) => {
+//   const points = neckPoints(stringLengths, start, control, end, stringSpacing, offset);
+//   const samples = [];
 
-  points.forEach((point, index) => {
-    if (index % 6 === 0) {
-      samples.push(point);
-    }
-  });
+//   points.forEach((point, index) => {
+//     if (index % 6 === 0) {
+//       samples.push(point);
+//     }
+//   });
 
-  return samples.flat();
-};
+//   return samples.flat();
+// };
 
-const bottomNeckPoints = (strings, stringLengths, start, control, end, stringSpacing, offset) => {
+const bottomNeckPoints = (
+  strings,
+  stringLengths,
+  start,
+  control,
+  end,
+  stringSpacing,
+  offset,
+  stringNumber
+) => {
   const points = neckPoints(
     strings.map((string) => string.length),
     start,
     control,
     end,
     stringSpacing,
-    offset
+    offset,
+    stringNumber
   );
-  const defaultPoints = neckPoints(stringLengths, start, control, end, stringSpacing, offset);
+  const defaultPoints = neckPoints(
+    stringLengths,
+    start,
+    control,
+    end,
+    stringSpacing,
+    offset,
+    stringNumber
+  );
   const samples = [];
 
   points.forEach((point, index) => {
@@ -180,16 +202,34 @@ const bottomNeckPoints = (strings, stringLengths, start, control, end, stringSpa
   return samples.flat();
 };
 
-const topNeckPoints = (strings, stringLengths, start, control, end, stringSpacing, offset) => {
+const topNeckPoints = (
+  strings,
+  stringLengths,
+  start,
+  control,
+  end,
+  stringSpacing,
+  offset,
+  stringNumber
+) => {
   const points = neckPoints(
     strings.map((string) => string.length),
     start,
     control,
     end,
     stringSpacing,
-    offset
+    offset,
+    stringNumber
   );
-  const defaultPoints = neckPoints(stringLengths, start, control, end, stringSpacing, offset);
+  const defaultPoints = neckPoints(
+    stringLengths,
+    start,
+    control,
+    end,
+    stringSpacing,
+    offset,
+    stringNumber
+  );
   const samples = [];
 
   points.forEach((point, index) => {
