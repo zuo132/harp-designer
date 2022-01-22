@@ -66,3 +66,8 @@ export const addNoteName = (strings, lowestNote = 'C2', tuning = 'C Major') => {
 
   return stringsWithNoteName;
 };
+
+export const calculateTensileStress = (length, width, tension) => {
+  console.log(length, width, tension);
+  return tension / (length * width);
+};

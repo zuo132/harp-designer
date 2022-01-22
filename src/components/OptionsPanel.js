@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import Overview from './Overview';
 import SoundboardOptions from './SoundboardOptions';
 import PillarOptions from './PillarOptions';
+import NeckOptions from './NeckOptions';
 import TuningOptions from './TuningOptions';
 import StringMaterialOptions from './StringMaterialOptions';
 import StringOptions from './StringOptions';
@@ -21,6 +22,10 @@ const OptionsPanel = () => {
 
       <OptionsContainer>
         <PillarOptions />
+      </OptionsContainer>
+
+      <OptionsContainer>
+        <NeckOptions />
       </OptionsContainer>
 
       <OptionsContainer>
