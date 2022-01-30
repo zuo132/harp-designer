@@ -2,17 +2,23 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Form, InputGroup, Button } from 'react-bootstrap';
 import styled from 'styled-components';
-import { updateSoundboardAngle } from '../actions/soundboardActions';
+import { updateSoundboardAngle, updateStringBandThickness } from '../actions/soundboardActions';
+import { calculateTensileStress } from '../utils';
 
 const SoundboardOptions = () => {
   const dispatch = useDispatch();
-  const { angle } = useSelector((state) => state.soundboard);
+  const { totalLoad } = useSelector((state) => state.string);
+  const { angle, stringBandThickness, length } = useSelector((state) => state.soundboard);
 
   const [soundboardAngle, setSoundboardAngle] = useState(angle);
+  const [bandThickness, setBandThickness] = useState(stringBandThickness);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(updateSoundboardAngle(parseInt(soundboardAngle)));
+    if (soundboardAngle && soundboardAngle !== angle)
+      dispatch(updateSoundboardAngle(parseInt(soundboardAngle)));
+    if (bandThickness && bandThickness !== stringBandThickness)
+      dispatch(updateStringBandThickness(bandThickness));
   };
 
   return (
@@ -31,7 +37,30 @@ const SoundboardOptions = () => {
         </InputGroup>
       </Form.Group>
 
-      <Button className='btn-sm' type='submit' variant='secondary' disabled={!soundboardAngle}>
+      <p>
+        Tensile Stress:{' '}
+        <b>
+          {(
+            calculateTensileStress(length / 1000, stringBandThickness / 1000, totalLoad * 9.807) /
+            1000000
+          ).toFixed(6)}
+        </b>{' '}
+        MPa
+      </p>
+
+      <Form.Group className='mb-3'>
+        <Form.Label>String Band Thickness</Form.Label>
+        <InputGroup>
+          <Form.Control
+            type='number'
+            value={bandThickness}
+            onChange={(e) => setBandThickness(e.target.value)}
+          ></Form.Control>
+          <InputGroupText>mm</InputGroupText>
+        </InputGroup>
+      </Form.Group>
+
+      <Button className='btn-sm' type='submit' variant='secondary'>
         Apply
       </Button>
     </Form>

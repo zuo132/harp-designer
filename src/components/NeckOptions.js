@@ -7,12 +7,8 @@ import { stringX, calculateTensileStress } from '../utils';
 
 const NeckOptions = () => {
   const dispatch = useDispatch();
-  const { strings, stringSpacing, stringNumber } = useSelector((state) => state.string);
+  const { stringSpacing, stringNumber, totalLoad } = useSelector((state) => state.string);
   const { neckThickness } = useSelector((state) => state.neck);
-  let totalTension = 0;
-  strings.forEach((string) => {
-    totalTension += string.tension;
-  });
 
   const [thickness, setThickness] = useState(neckThickness);
 
@@ -25,26 +21,21 @@ const NeckOptions = () => {
     <>
       <h5>Neck</h5>
 
-      <span>
+      <p>
         Tensile Stress:{' '}
         <b>
           {(
             calculateTensileStress(
-              (((stringX(stringNumber + 3, stringSpacing) +
-                20 -
-                (stringX(-4, stringSpacing) - 30)) /
-                0.4) *
-                100) /
-                100 /
+              (stringX(stringNumber + 3, stringSpacing) + 20 - (stringX(-4, stringSpacing) - 30)) /
+                0.4 /
                 1000,
               neckThickness / 1000,
-              totalTension * 9.807
+              totalLoad * 9.807
             ) / 1000000
           ).toFixed(6)}
         </b>{' '}
         MPa
-      </span>
-      <p></p>
+      </p>
 
       <Form onSubmit={handleSubmit}>
         <Form.Group className='mb-3'>

@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Shape, Circle } from 'react-konva';
-import { updateControlPosition } from '../actions/soundboardActions';
+import { updateControlPosition, updateSoundboardLength } from '../actions/soundboardActions';
 
 const Body = ({ start, end, dispatch }) => {
   const control = useRef(null);
@@ -11,13 +11,22 @@ const Body = ({ start, end, dispatch }) => {
   }, [control, dispatch]);
 
   useEffect(() => {
+    const length = Math.sqrt((end.x - start.x) ** 2 + (end.y - start.y) ** 2) * 0.4;
+    dispatch(updateSoundboardLength(length));
+  }, []);
+
+  useEffect(() => {
     if (end.y !== cachedEnd.y) {
+      const length = Math.sqrt((end.x - start.x) ** 2 + (end.y - start.y) ** 2) * 0.4;
+      dispatch(updateSoundboardLength(length));
+
       dispatch(
         updateControlPosition({
           x: control.current.x(),
           y: control.current.y(),
         })
       );
+
       setCachedEnd(end);
     }
   }, [control, dispatch, end]);

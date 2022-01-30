@@ -23,6 +23,7 @@ const initialState = {
   tuning: 'C Major',
   stringNumber: 36,
   lowestNote: 'C2',
+  totalLoad: strings.reduce((acc, string) => acc + string.tension, 0),
 };
 
 const stringReducer = createReducer(initialState, {
@@ -37,6 +38,8 @@ const stringReducer = createReducer(initialState, {
     Object.keys(payload.params).forEach((key) => {
       stringToUpdate[key] = payload.params[key];
     });
+
+    state.totalLoad = state.strings.reduce((acc, string) => acc + string.tension, 0);
   },
 
   UPDATE_STRING_MATERIAL_DENSITY: (state, { payload }) => {
@@ -52,6 +55,8 @@ const stringReducer = createReducer(initialState, {
     state.materialDensity = payload.density;
     if (state.selectedString)
       state.selectedString = state.strings.find((string) => string.id === state.selectedString.id);
+
+    state.totalLoad = state.strings.reduce((acc, string) => acc + string.tension, 0);
   },
 
   UPDATE_TUNING: (state, { payload }) => {
@@ -67,6 +72,8 @@ const stringReducer = createReducer(initialState, {
     state.tuning = payload.tuning;
     if (state.selectedString)
       state.selectedString = state.strings.find((string) => string.id === state.selectedString.id);
+
+    state.totalLoad = state.strings.reduce((acc, string) => acc + string.tension, 0);
   },
 
   UPDATE_STRING_NUMBER: (state, { payload }) => {
@@ -132,12 +139,29 @@ const stringReducer = createReducer(initialState, {
       stringNumber: payload.stringNumber,
       strings: updatedStrings,
       defaultStringLengths: updatedDefaultStringLengths,
+      totalLoad: state.strings.reduce((acc, string) => acc + string.tension, 0),
     };
   },
 
   UPDATE_LOWEST_NOTE: (state, { payload }) => {
-    const updatedStrings = addNoteName(state.strings, payload.lowestNote, state.tuning);
-    return { ...state, lowestNote: payload.lowestNote, strings: updatedStrings };
+    let updatedStrings = addNoteName(state.strings, payload.lowestNote, state.tuning);
+    updatedStrings = updatedStrings.map((string) => {
+      const tension = calculateTension(
+        string.length / 1000,
+        string.frequency,
+        string.diameter / 1000,
+        state.materialDensity
+      );
+
+      return { ...string, tension };
+    });
+
+    return {
+      ...state,
+      lowestNote: payload.lowestNote,
+      strings: updatedStrings,
+      totalLoad: updatedStrings.reduce((acc, string) => acc + string.tension, 0),
+    };
   },
 });
 
