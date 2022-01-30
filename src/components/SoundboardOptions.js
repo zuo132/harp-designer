@@ -41,8 +41,11 @@ const SoundboardOptions = () => {
         Tensile Stress:{' '}
         <b>
           {(
-            calculateTensileStress(length / 1000, stringBandThickness / 1000, totalLoad * 9.807) /
-            1000000
+            calculateTensileStress(
+              length / 1000,
+              stringBandThickness / 1000,
+              totalLoad * 0.5 * 9.807
+            ) / 1000000
           ).toFixed(6)}
         </b>{' '}
         MPa

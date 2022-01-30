@@ -63,7 +63,7 @@ const PillarOptions = () => {
 
       <p>
         Compresive Stress:{' '}
-        <b>{(((totalLoad / 2) * 9.807) / calculateCrossSectionArea() / 1000000).toFixed(6)}</b> MPa
+        <b>{((totalLoad * 0.6 * 9.807) / calculateCrossSectionArea() / 1000000).toFixed(6)}</b> MPa
       </p>
 
       {shape === 'Straight' ? (
