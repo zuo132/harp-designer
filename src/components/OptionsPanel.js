@@ -32,9 +32,9 @@ const OptionsPanel = () => {
         <TuningOptions />
       </OptionsContainer>
 
-      <OptionsContainer>
+      {/* <OptionsContainer>
         <StringMaterialOptions />
-      </OptionsContainer>
+      </OptionsContainer> */}
 
       <OptionsContainer>
         <StringOptions />

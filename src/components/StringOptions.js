@@ -7,17 +7,19 @@ import { calculateTension } from '../utils';
 
 const StringOptions = () => {
   const dispatch = useDispatch();
-  const { selectedString, materialDensity } = useSelector((state) => state.string);
+  const { selectedString } = useSelector((state) => state.string);
 
   const [length, setLength] = useState(0);
   const [diameter, setDiameter] = useState(0);
   const [tension, setTension] = useState(0);
+  const [material, setMaterial] = useState(0);
 
   useEffect(() => {
     if (selectedString) {
       setLength(selectedString.length);
       setDiameter(selectedString.diameter);
       setTension(selectedString.tension);
+      setMaterial(selectedString.materialDensity);
     }
   }, [selectedString]);
 
@@ -27,7 +29,7 @@ const StringOptions = () => {
       length / 1000,
       selectedString.frequency,
       diameter / 1000,
-      materialDensity
+      material
     );
 
     dispatch(
@@ -35,6 +37,7 @@ const StringOptions = () => {
         length,
         diameter,
         tension: newTension,
+        materialDensity: material,
       })
     );
     setTension(newTension);
@@ -74,7 +77,7 @@ const StringOptions = () => {
         </InputGroup>
       </Form.Group>
 
-      <Form.Group className='mb-3'>
+      <Form.Group className='mb-1'>
         <Form.Label>Tension</Form.Label>
         <InputGroup>
           <Form.Control
@@ -84,6 +87,21 @@ const StringOptions = () => {
           />
           <InputGroupText>kg</InputGroupText>
         </InputGroup>
+      </Form.Group>
+
+      <Form.Group className='mb-3'>
+        <Form.Label>Material</Form.Label>
+        <Form.Select
+          aria-label='Default select example'
+          value={material}
+          onChange={(e) => setMaterial(parseFloat(e.target.value))}
+        >
+          <option value={1.14}>Nylon</option>
+          <option value={8.77}>Brass</option>
+          <option value={7.8}>Steel</option>
+          <option value={8.94}>Copper</option>
+          <option value={8.85}>Phosphor Bronze</option>
+        </Form.Select>
       </Form.Group>
 
       <Button className='btn-sm' type='submit' variant='secondary'>

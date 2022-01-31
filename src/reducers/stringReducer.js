@@ -11,6 +11,7 @@ const strings = addNoteName(stringData.reverse()).map((string, index, array) => 
     length,
     diameter: inchToMeter(string.diameter) * 1000,
     tension: calculateTension(length / 1000, string.frequency, inchToMeter(string.diameter)),
+    materialDensity: 1.14,
   };
 });
 
