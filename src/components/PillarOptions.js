@@ -86,7 +86,7 @@ const PillarOptions = () => {
         </Form>
       ) : (
         <Form onSubmit={updateWidthAndThickness}>
-          <Form.Group className='mb-3'>
+          <Form.Group className='mb-1'>
             <Form.Label>Pillar Width</Form.Label>
             <InputGroup>
               <Form.Control
