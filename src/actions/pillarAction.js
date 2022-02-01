@@ -15,3 +15,7 @@ export const updatePillarWidth = (width) => async (dispatch) => {
 export const updatePillarThickness = (thickness) => async (dispatch) => {
   dispatch(createAction('UPDATE_PILLAR_THICKNESS')({ thickness }));
 };
+
+export const updateNeckJointWidth = (width) => async (dispatch) => {
+  dispatch(createAction('UPDATE_NECK_JOINT_WIDTH')({ width }));
+};

@@ -7,19 +7,21 @@ import {
   updatePillarDiameter,
   updatePillarWidth,
   updatePillarThickness,
+  updateNeckJointWidth,
 } from '../actions/pillarAction';
 
 const PillarOptions = () => {
   const dispatch = useDispatch();
 
   const { totalLoad } = useSelector((state) => state.string);
-  const { shape, pillarDiameter, pillarWidth, pillarThickness } = useSelector(
+  const { shape, pillarDiameter, pillarWidth, pillarThickness, neckJointWidth } = useSelector(
     (state) => state.pillar
   );
 
   const [diameter, setDiameter] = useState(pillarDiameter);
   const [width, setWidth] = useState(pillarWidth);
   const [thickness, setThickness] = useState(pillarThickness);
+  const [neckJoint, setNeckJoint] = useState(neckJointWidth);
 
   const updateShape = (shape) => {
     dispatch(updatePillarShape(shape));
@@ -34,6 +36,8 @@ const PillarOptions = () => {
     e.preventDefault();
     if (width && width !== pillarWidth) dispatch(updatePillarWidth(width));
     if (thickness && thickness !== pillarThickness) dispatch(updatePillarThickness(thickness));
+    if (neckJoint && neckJoint !== neckJointWidth)
+      dispatch(updateNeckJointWidth(parseInt(neckJoint)));
   };
 
   const calculateCrossSectionArea = () => {
@@ -98,7 +102,7 @@ const PillarOptions = () => {
             </InputGroup>
           </Form.Group>
 
-          <Form.Group className='mb-3'>
+          <Form.Group className='mb-1'>
             <Form.Label>Pillar Thickness</Form.Label>
             <InputGroup>
               <Form.Control
@@ -108,6 +112,16 @@ const PillarOptions = () => {
               ></Form.Control>
               <InputGroupText>mm</InputGroupText>
             </InputGroup>
+          </Form.Group>
+
+          <Form.Group className='mb-3'>
+            <Form.Label>Neck Joint Width</Form.Label>
+            <Form.Range
+              max={5}
+              min={1}
+              value={neckJoint}
+              onChange={(e) => setNeckJoint(e.target.value)}
+            />
           </Form.Group>
 
           <Button className='btn-sm' type='submit' variant='secondary'>

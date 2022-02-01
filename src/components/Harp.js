@@ -17,6 +17,7 @@ const Harp = () => {
     (state) => state.string
   );
   const { angle, control } = useSelector((state) => state.soundboard);
+  const { neckJointWidth } = useSelector((state) => state.pillar);
 
   const tooltip = useRef(null);
 
@@ -46,15 +47,15 @@ const Harp = () => {
               ),
             }}
             dEnd={{
-              x: stringX(2, stringSpacing),
+              x: stringX(neckJointWidth, stringSpacing),
               y:
                 getQBezierValue(
-                  6 / (stringNumber + 7),
+                  (4 + neckJointWidth) / (stringNumber + 7),
                   stringY(-4, yOffset),
                   control?.y,
                   stringY(stringNumber + 3, yOffset)
                 ) -
-                strings[2].length * 0.4,
+                strings[neckJointWidth].length * 0.4,
             }}
           />
           <Neck

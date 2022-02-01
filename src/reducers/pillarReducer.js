@@ -5,6 +5,7 @@ const initialState = {
   pillarDiameter: 30,
   pillarWidth: 40,
   pillarThickness: 20,
+  neckJointWidth: 2,
 };
 
 const pillarReducer = createReducer(initialState, {
@@ -22,6 +23,10 @@ const pillarReducer = createReducer(initialState, {
 
   UPDATE_PILLAR_THICKNESS: (state, { payload }) => {
     return { ...state, pillarThickness: payload.thickness };
+  },
+
+  UPDATE_NECK_JOINT_WIDTH: (state, { payload }) => {
+    return { ...state, neckJointWidth: payload.width };
   },
 });
 
