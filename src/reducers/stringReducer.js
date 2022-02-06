@@ -40,6 +40,7 @@ const stringReducer = createReducer(initialState, {
       stringToUpdate[key] = payload.params[key];
     });
 
+    state.selectedString = stringToUpdate;
     state.totalLoad = state.strings.reduce((acc, string) => acc + string.tension, 0);
   },
 

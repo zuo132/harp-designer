@@ -11,9 +11,23 @@ export function getQBezierValue(t, p1, p2, p3) {
   return iT * iT * p1 + 2 * iT * t * p2 + t * t * p3;
 }
 
-export const calculateTension = (length, frequency, diameter, p = 1.14) => {
+export const calculateTension = (frequency, length, diameter, p = 1.14) => {
   const mu = (diameter / 2) ** 2 * Math.PI * p * 100;
   return (2 * length * frequency) ** 2 * mu;
+};
+
+export const calculateFrequency = (length, tension, diameter, p = 1.14) => {
+  const mu = (diameter / 2) ** 2 * Math.PI * p * 100;
+  return Math.sqrt(tension / mu) / (2 * length);
+};
+
+export const calculateLength = (frequency, tension, diameter, p = 1.14) => {
+  const mu = (diameter / 2) ** 2 * Math.PI * p * 100;
+  return Math.sqrt(tension / mu) / (2 * frequency);
+};
+
+export const calculateDiameter = (frequency, length, tension, p = 1.14) => {
+  return Math.sqrt(tension / ((2 * length * frequency) ** 2 * (Math.PI * p * 100))) * 2;
 };
 
 export const inchToMeter = (value) => {
@@ -68,6 +82,5 @@ export const addNoteName = (strings, lowestNote = 'C2', tuning = 'C Major') => {
 };
 
 export const calculateTensileStress = (length, width, tension) => {
-  console.log(length, width, tension);
   return tension / (length * width);
 };

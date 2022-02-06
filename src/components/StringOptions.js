@@ -3,19 +3,22 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Form, InputGroup, Button } from 'react-bootstrap';
 import styled from 'styled-components';
 import { updateString } from '../actions/stringActions';
-import { calculateTension } from '../utils';
+import { calculateTension, calculateFrequency, calculateLength, calculateDiameter } from '../utils';
 
 const StringOptions = () => {
   const dispatch = useDispatch();
   const { selectedString } = useSelector((state) => state.string);
 
+  const [frequency, setFrequency] = useState(0);
   const [length, setLength] = useState(0);
   const [diameter, setDiameter] = useState(0);
   const [tension, setTension] = useState(0);
   const [material, setMaterial] = useState(0);
+  const [selectedField, setSelectField] = useState('tension');
 
   useEffect(() => {
     if (selectedString) {
+      setFrequency(selectedString.frequency);
       setLength(selectedString.length);
       setDiameter(selectedString.diameter);
       setTension(selectedString.tension);
@@ -25,22 +28,37 @@ const StringOptions = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const newTension = calculateTension(
-      length / 1000,
-      selectedString.frequency,
-      diameter / 1000,
-      material
-    );
+
+    let newFrequency = parseFloat(frequency),
+      newLength = parseFloat(length),
+      newDiameter = parseFloat(diameter),
+      newTension = parseFloat(tension);
+
+    switch (selectedField) {
+      case 'frequency':
+        newFrequency = calculateFrequency(length / 1000, tension, diameter / 1000, material);
+        break;
+      case 'length':
+        newLength = calculateLength(frequency, tension, diameter / 1000, material) * 1000;
+        break;
+      case 'diameter':
+        newDiameter = calculateDiameter(frequency, length / 1000, tension, material) * 1000;
+        break;
+      case 'tension':
+        newTension = calculateTension(frequency, length / 1000, diameter / 1000, material);
+        break;
+      default:
+    }
 
     dispatch(
       updateString(selectedString.id, {
-        length,
-        diameter,
+        frequency: newFrequency,
+        length: newLength,
+        diameter: newDiameter,
         tension: newTension,
         materialDensity: material,
       })
     );
-    setTension(newTension);
   };
 
   if (!selectedString) return null;
@@ -52,16 +70,42 @@ const StringOptions = () => {
       <Form.Group className='mb-1'>
         <Form.Label>Frequency</Form.Label>
         <InputGroup>
-          <Form.Control type='number' value={selectedString.frequency} disabled />
+          <Form.Control
+            type='number'
+            value={frequency}
+            onChange={(e) => setFrequency(e.target.value)}
+            disabled={selectedField === 'frequency'}
+          />
           <InputGroupText>Hz</InputGroupText>
+          <RadioContainer>
+            <Form.Check
+              type='radio'
+              checked={selectedField === 'frequency'}
+              onChange={() => setSelectField('frequency')}
+              name='stringinput'
+            />
+          </RadioContainer>
         </InputGroup>
       </Form.Group>
 
       <Form.Group className='mb-1'>
         <Form.Label>Length</Form.Label>
         <InputGroup>
-          <Form.Control type='number' value={length} onChange={(e) => setLength(e.target.value)} />
+          <Form.Control
+            type='number'
+            value={length}
+            onChange={(e) => setLength(e.target.value)}
+            disabled={selectedField === 'length'}
+          />
           <InputGroupText>mm</InputGroupText>
+          <RadioContainer>
+            <Form.Check
+              type='radio'
+              checked={selectedField === 'length'}
+              onChange={() => setSelectField('length')}
+              name='stringinput'
+            />
+          </RadioContainer>
         </InputGroup>
       </Form.Group>
 
@@ -72,8 +116,17 @@ const StringOptions = () => {
             type='number'
             value={diameter}
             onChange={(e) => setDiameter(e.target.value)}
+            disabled={selectedField === 'diameter'}
           />
           <InputGroupText>mm</InputGroupText>
+          <RadioContainer>
+            <Form.Check
+              type='radio'
+              checked={selectedField === 'diameter'}
+              onChange={() => setSelectField('diameter')}
+              name='stringinput'
+            />
+          </RadioContainer>
         </InputGroup>
       </Form.Group>
 
@@ -84,8 +137,17 @@ const StringOptions = () => {
             type='number'
             value={tension}
             onChange={(e) => setTension(e.target.value)}
+            disabled={selectedField === 'tension'}
           />
           <InputGroupText>kg</InputGroupText>
+          <RadioContainer>
+            <Form.Check
+              type='radio'
+              checked={selectedField === 'tension'}
+              onChange={() => setSelectField('tension')}
+              name='stringinput'
+            />
+          </RadioContainer>
         </InputGroup>
       </Form.Group>
 
@@ -94,7 +156,7 @@ const StringOptions = () => {
         <Form.Select
           aria-label='Default select example'
           value={material}
-          onChange={(e) => setMaterial(parseFloat(e.target.value))}
+          onChange={(e) => setMaterial(e.target.value)}
         >
           <option value={1.14}>Nylon</option>
           <option value={8.77}>Brass</option>
@@ -104,7 +166,12 @@ const StringOptions = () => {
         </Form.Select>
       </Form.Group>
 
-      <Button className='btn-sm' type='submit' variant='secondary'>
+      <Button
+        className='btn-sm'
+        type='submit'
+        variant='secondary'
+        disabled={!(frequency && length && diameter && tension)}
+      >
         Apply
       </Button>
     </Form>
@@ -117,4 +184,11 @@ const InputGroupText = styled(InputGroup.Text)`
   min-width: 70px;
   display: inline-block;
   text-align: center;
+`;
+
+const RadioContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 10px;
 `;
