@@ -14,6 +14,7 @@ const StringOptions = () => {
   const [diameter, setDiameter] = useState(0);
   const [tension, setTension] = useState(0);
   const [material, setMaterial] = useState(0);
+  const [lmd, setLmd] = useState(0);
   const [selectedField, setSelectField] = useState('tension');
 
   useEffect(() => {
@@ -23,6 +24,7 @@ const StringOptions = () => {
       setDiameter(selectedString.diameter);
       setTension(selectedString.tension);
       setMaterial(selectedString.materialDensity);
+      setLmd(selectedString.linearMassDensity);
     }
   }, [selectedString]);
 
@@ -36,29 +38,44 @@ const StringOptions = () => {
 
     switch (selectedField) {
       case 'frequency':
-        newFrequency = calculateFrequency(length / 1000, tension, diameter / 1000, material);
+        newFrequency = calculateFrequency(
+          length / 1000,
+          tension,
+          diameter / 1000,
+          material,
+          material ? 0 : lmd
+        );
         break;
       case 'length':
-        newLength = calculateLength(frequency, tension, diameter / 1000, material) * 1000;
+        newLength =
+          calculateLength(frequency, tension, diameter / 1000, material, material ? 0 : lmd) * 1000;
         break;
       case 'diameter':
         newDiameter = calculateDiameter(frequency, length / 1000, tension, material) * 1000;
         break;
       case 'tension':
-        newTension = calculateTension(frequency, length / 1000, diameter / 1000, material);
+        newTension = calculateTension(
+          frequency,
+          length / 1000,
+          diameter / 1000,
+          material,
+          material ? 0 : lmd
+        );
         break;
       default:
     }
 
-    dispatch(
-      updateString(selectedString.id, {
-        frequency: newFrequency,
-        length: newLength,
-        diameter: newDiameter,
-        tension: newTension,
-        materialDensity: material,
-      })
-    );
+    let params = {
+      frequency: newFrequency,
+      length: newLength,
+      diameter: newDiameter,
+      tension: newTension,
+      materialDensity: material,
+    };
+
+    if (lmd) params = { ...params, linearMassDensity: parseFloat(lmd) };
+
+    dispatch(updateString(selectedString.id, params));
   };
 
   if (!selectedString) return null;
@@ -109,26 +126,28 @@ const StringOptions = () => {
         </InputGroup>
       </Form.Group>
 
-      <Form.Group className='mb-1'>
-        <Form.Label>Diameter</Form.Label>
-        <InputGroup>
-          <Form.Control
-            type='number'
-            value={diameter}
-            onChange={(e) => setDiameter(e.target.value)}
-            disabled={selectedField === 'diameter'}
-          />
-          <InputGroupText>mm</InputGroupText>
-          <RadioContainer>
-            <Form.Check
-              type='radio'
-              checked={selectedField === 'diameter'}
-              onChange={() => setSelectField('diameter')}
-              name='stringinput'
+      {material !== 0 && (
+        <Form.Group className='mb-1'>
+          <Form.Label>Diameter</Form.Label>
+          <InputGroup>
+            <Form.Control
+              type='number'
+              value={diameter}
+              onChange={(e) => setDiameter(e.target.value)}
+              disabled={selectedField === 'diameter'}
             />
-          </RadioContainer>
-        </InputGroup>
-      </Form.Group>
+            <InputGroupText>mm</InputGroupText>
+            <RadioContainer>
+              <Form.Check
+                type='radio'
+                checked={selectedField === 'diameter'}
+                onChange={() => setSelectField('diameter')}
+                name='stringinput'
+              />
+            </RadioContainer>
+          </InputGroup>
+        </Form.Group>
+      )}
 
       <Form.Group className='mb-1'>
         <Form.Label>Tension</Form.Label>
@@ -151,26 +170,49 @@ const StringOptions = () => {
         </InputGroup>
       </Form.Group>
 
-      <Form.Group className='mb-3'>
+      <Form.Group className={material === 0 ? 'mb-1' : 'mb-3'}>
         <Form.Label>Material</Form.Label>
         <Form.Select
           aria-label='Default select example'
           value={material}
-          onChange={(e) => setMaterial(e.target.value)}
+          onChange={(e) => {
+            if (e.target.value === '0' && selectedField === 'diameter') {
+              setSelectField('tension');
+            }
+            setMaterial(parseFloat(e.target.value));
+          }}
         >
           <option value={1.14}>Nylon</option>
           <option value={8.77}>Brass</option>
           <option value={7.8}>Steel</option>
           <option value={8.94}>Copper</option>
           <option value={8.85}>Phosphor Bronze</option>
+          <option value={0}>Other</option>
         </Form.Select>
       </Form.Group>
+
+      {material === 0 && (
+        <Form.Group className='mb-3'>
+          <Form.Label>Linear Mass Density (mass/length)</Form.Label>
+          <InputGroup>
+            <Form.Control type='number' value={lmd} onChange={(e) => setLmd(e.target.value)} />
+            <InputGroupText>kg/m</InputGroupText>
+          </InputGroup>
+        </Form.Group>
+      )}
 
       <Button
         className='btn-sm'
         type='submit'
         variant='secondary'
-        disabled={!(frequency && length && diameter && tension)}
+        disabled={
+          !(
+            (frequency || selectedField === 'frequency') &&
+            (length || selectedField === 'length') &&
+            (diameter || selectedField === 'diameter') &&
+            (tension || selectedField === 'tension')
+          )
+        }
       >
         Apply
       </Button>

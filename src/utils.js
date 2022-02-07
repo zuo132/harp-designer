@@ -11,23 +11,24 @@ export function getQBezierValue(t, p1, p2, p3) {
   return iT * iT * p1 + 2 * iT * t * p2 + t * t * p3;
 }
 
-export const calculateTension = (frequency, length, diameter, p = 1.14) => {
-  const mu = (diameter / 2) ** 2 * Math.PI * p * 100;
-  return (2 * length * frequency) ** 2 * mu;
+export const calculateTension = (frequency, length, diameter, p = 1.14, linearMassDensity = 0) => {
+  const mu = linearMassDensity ? linearMassDensity : (diameter / 2) ** 2 * Math.PI * p * 1000;
+  return ((2 * length * frequency) ** 2 * mu) / 9.807;
 };
 
-export const calculateFrequency = (length, tension, diameter, p = 1.14) => {
-  const mu = (diameter / 2) ** 2 * Math.PI * p * 100;
-  return Math.sqrt(tension / mu) / (2 * length);
+export const calculateFrequency = (length, tension, diameter, p = 1.14, linearMassDensity = 0) => {
+  const mu = linearMassDensity ? linearMassDensity : (diameter / 2) ** 2 * Math.PI * p * 1000;
+  return Math.sqrt((tension * 9.807) / mu) / (2 * length);
 };
 
-export const calculateLength = (frequency, tension, diameter, p = 1.14) => {
-  const mu = (diameter / 2) ** 2 * Math.PI * p * 100;
-  return Math.sqrt(tension / mu) / (2 * frequency);
+export const calculateLength = (frequency, tension, diameter, p = 1.14, linearMassDensity = 0) => {
+  const mu = linearMassDensity ? linearMassDensity : (diameter / 2) ** 2 * Math.PI * p * 1000;
+
+  return Math.sqrt((tension * 9.807) / mu) / (2 * frequency);
 };
 
 export const calculateDiameter = (frequency, length, tension, p = 1.14) => {
-  return Math.sqrt(tension / ((2 * length * frequency) ** 2 * (Math.PI * p * 100))) * 2;
+  return Math.sqrt((tension * 9.807) / ((2 * length * frequency) ** 2 * (Math.PI * p * 1000))) * 2;
 };
 
 export const inchToMeter = (value) => {
