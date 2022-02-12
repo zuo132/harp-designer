@@ -69,7 +69,7 @@ const stringReducer = createReducer(initialState, {
         string.length / 1000,
         string.frequency,
         string.diameter / 1000,
-        state.materialDensity
+        string.materialDensity
       );
     });
     state.tuning = payload.tuning;
@@ -80,7 +80,7 @@ const stringReducer = createReducer(initialState, {
   },
 
   UPDATE_STRING_NUMBER: (state, { payload }) => {
-    let updatedStrings = [];
+    let updatedStrings = state.strings;
     let updatedDefaultStringLengths = [];
 
     const difference = payload.stringNumber - state.stringNumber;
@@ -90,9 +90,10 @@ const stringReducer = createReducer(initialState, {
       for (let i = 0; i < difference; i++) {
         const x = state.strings.length + i;
         const newString = {
-          id: x + 1,
+          id: x + 1 + '',
           length: 0.71 * x ** 2 + 7 * x + 100,
           diameter: state.strings[0].diameter,
+          materialDensity: state.materialDensity,
         };
         newStrings.push(newString);
       }
@@ -108,7 +109,7 @@ const stringReducer = createReducer(initialState, {
           string.length / 1000,
           string.frequency,
           string.diameter / 1000,
-          state.materialDensity
+          string.materialDensity
         );
 
         return { ...string, tension };
@@ -128,7 +129,7 @@ const stringReducer = createReducer(initialState, {
           string.length / 1000,
           string.frequency,
           string.diameter / 1000,
-          state.materialDensity
+          string.materialDensity
         );
 
         return { ...string, tension };
@@ -153,7 +154,7 @@ const stringReducer = createReducer(initialState, {
         string.length / 1000,
         string.frequency,
         string.diameter / 1000,
-        state.materialDensity
+        string.materialDensity
       );
 
       return { ...string, tension };
