@@ -17,6 +17,10 @@ const OptionsPanel = () => {
       </OptionsContainer>
 
       <OptionsContainer>
+        <NeckOptions />
+      </OptionsContainer>
+
+      <OptionsContainer>
         <SoundboardOptions />
       </OptionsContainer>
 
@@ -25,16 +29,12 @@ const OptionsPanel = () => {
       </OptionsContainer>
 
       <OptionsContainer>
-        <NeckOptions />
+        <StringMaterialOptions />
       </OptionsContainer>
 
       <OptionsContainer>
         <TuningOptions />
       </OptionsContainer>
-
-      {/* <OptionsContainer>
-        <StringMaterialOptions />
-      </OptionsContainer> */}
 
       <OptionsContainer>
         <StringOptions />

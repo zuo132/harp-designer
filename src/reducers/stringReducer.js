@@ -53,6 +53,8 @@ const stringReducer = createReducer(initialState, {
         string.diameter / 1000,
         payload.density
       );
+
+      string.materialDensity = payload.density;
     });
 
     state.materialDensity = payload.density;
