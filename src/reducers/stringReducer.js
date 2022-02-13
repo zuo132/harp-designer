@@ -71,7 +71,8 @@ const stringReducer = createReducer(initialState, {
         string.length / 1000,
         string.frequency,
         string.diameter / 1000,
-        string.materialDensity
+        string.materialDensity,
+        string.materialDensity ? 0 : string.linearMassDensity
       );
     });
     state.tuning = payload.tuning;
@@ -111,7 +112,8 @@ const stringReducer = createReducer(initialState, {
           string.length / 1000,
           string.frequency,
           string.diameter / 1000,
-          string.materialDensity
+          string.materialDensity,
+          string.materialDensity ? 0 : string.linearMassDensity
         );
 
         return { ...string, tension };
@@ -131,7 +133,8 @@ const stringReducer = createReducer(initialState, {
           string.length / 1000,
           string.frequency,
           string.diameter / 1000,
-          string.materialDensity
+          string.materialDensity,
+          string.materialDensity ? 0 : string.linearMassDensity
         );
 
         return { ...string, tension };
@@ -146,6 +149,7 @@ const stringReducer = createReducer(initialState, {
       strings: updatedStrings,
       defaultStringLengths: updatedDefaultStringLengths,
       totalLoad: state.strings.reduce((acc, string) => acc + string.tension, 0),
+      selectedString: null,
     };
   },
 
@@ -156,7 +160,8 @@ const stringReducer = createReducer(initialState, {
         string.length / 1000,
         string.frequency,
         string.diameter / 1000,
-        string.materialDensity
+        string.materialDensity,
+        string.materialDensity ? 0 : string.linearMassDensity
       );
 
       return { ...string, tension };
@@ -167,6 +172,7 @@ const stringReducer = createReducer(initialState, {
       lowestNote: payload.lowestNote,
       strings: updatedStrings,
       totalLoad: updatedStrings.reduce((acc, string) => acc + string.tension, 0),
+      selectedString: updatedStrings.find((string) => string.id === state.selectedString.id),
     };
   },
 });
