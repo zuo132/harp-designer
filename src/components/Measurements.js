@@ -1,21 +1,40 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { Arrow, Label, Tag, Text } from 'react-konva';
-import { stringX, stringY } from '../utils';
+import { stringX, stringY, getQBezierValue } from '../utils';
 
 const Measurements = ({ yOffset }) => {
-  const { defaultStringLengths, stringSpacing, stringNumber } = useSelector(
+  const { strings, defaultStringLengths, stringSpacing, stringNumber } = useSelector(
     (state) => state.string
   );
+  const { control } = useSelector((state) => state.soundboard);
+
+  const highestStringY = useMemo(() => {
+    let yPos = 1000;
+
+    strings.forEach((string, index) => {
+      const yPosAtSoundboard = getQBezierValue(
+        (index + 4) / (stringNumber + 7),
+        stringY(-4, yOffset),
+        control?.y,
+        stringY(stringNumber + 3, yOffset)
+      );
+
+      const stringHeight = yPosAtSoundboard - string.length * 0.4;
+      if (stringHeight < yPos) yPos = stringHeight;
+    });
+
+    return yPos;
+  }, [strings, yOffset, control, stringY, getQBezierValue]);
 
   return (
     <>
       <Arrow
         points={[
           stringX(-4, stringSpacing) - 90,
-          stringY(-4, yOffset) / 2 - 20,
+          (highestStringY + stringY(-4, yOffset)) / 2 - 40,
           stringX(-4, stringSpacing) - 90,
-          stringY(-4, yOffset) - defaultStringLengths[0] * 0.48,
+          highestStringY - 40,
         ]}
         stroke='blue'
       />
@@ -23,14 +42,18 @@ const Measurements = ({ yOffset }) => {
       <Arrow
         points={[
           stringX(-4, stringSpacing) - 90,
-          stringY(-4, yOffset) / 2 + 40,
+          (highestStringY + stringY(-4, yOffset)) / 2 + 20,
           stringX(-4, stringSpacing) - 90,
           stringY(-4, yOffset),
         ]}
         stroke='blue'
       />
 
-      <Label x={stringX(-4, stringSpacing) - 90} y={stringY(-4, yOffset) / 2} listening={false}>
+      <Label
+        x={stringX(-4, stringSpacing) - 90}
+        y={(highestStringY + stringY(-4, yOffset)) / 2 - 25}
+        listening={false}
+      >
         <Tag
           fill='black'
           pointerDirection='up'
@@ -57,9 +80,9 @@ const Measurements = ({ yOffset }) => {
       <Arrow
         points={[
           stringX(-4, stringSpacing) + stringX(-4, stringSpacing) / 2 + 50,
-          stringY(-4, yOffset) - defaultStringLengths[0] * 0.48 - 30,
+          highestStringY - 80,
           stringX(stringNumber + 3, stringSpacing) + 20,
-          stringY(-4, yOffset) - defaultStringLengths[0] * 0.48 - 30,
+          highestStringY - 80,
         ]}
         stroke='blue'
       />
@@ -67,16 +90,16 @@ const Measurements = ({ yOffset }) => {
       <Arrow
         points={[
           stringX(-4, stringSpacing) + stringX(-4, stringSpacing) / 2 - 80,
-          stringY(-4, yOffset) - defaultStringLengths[0] * 0.48 - 30,
+          highestStringY - 80,
           stringX(-4, stringSpacing) - 30,
-          stringY(-4, yOffset) - defaultStringLengths[0] * 0.48 - 30,
+          highestStringY - 80,
         ]}
         stroke='blue'
       />
 
       <Label
         x={stringX(-4, stringSpacing) + stringX(-4, stringSpacing) / 2 + 30}
-        y={stringY(-4, yOffset) - defaultStringLengths[0] * 0.48 - 30}
+        y={highestStringY - 80}
         listening={false}
       >
         <Tag
