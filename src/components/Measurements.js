@@ -34,7 +34,7 @@ const Measurements = ({ yOffset }) => {
           stringX(-4, stringSpacing) - 90,
           (highestStringY + stringY(-4, yOffset)) / 2 - 40,
           stringX(-4, stringSpacing) - 90,
-          highestStringY - 40,
+          highestStringY - 50,
         ]}
         stroke='blue'
       />

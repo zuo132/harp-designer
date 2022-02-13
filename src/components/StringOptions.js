@@ -4,6 +4,7 @@ import { Form, InputGroup, Button } from 'react-bootstrap';
 import styled from 'styled-components';
 import { updateString } from '../actions/stringActions';
 import { calculateTension, calculateFrequency, calculateLength, calculateDiameter } from '../utils';
+import { stringGaugeData } from '../stringGaugeData';
 
 const StringOptions = () => {
   const dispatch = useDispatch();
@@ -15,6 +16,7 @@ const StringOptions = () => {
   const [tension, setTension] = useState(0);
   const [material, setMaterial] = useState(0);
   const [lmd, setLmd] = useState(0);
+  const [stringGauge, setStringGauge] = useState(0.00145);
   const [selectedField, setSelectField] = useState('tension');
 
   useEffect(() => {
@@ -43,12 +45,18 @@ const StringOptions = () => {
           tension,
           diameter / 1000,
           material,
-          material ? 0 : lmd
+          material === 0 ? lmd : material === -1 ? stringGauge : 0
         );
         break;
       case 'length':
         newLength =
-          calculateLength(frequency, tension, diameter / 1000, material, material ? 0 : lmd) * 1000;
+          calculateLength(
+            frequency,
+            tension,
+            diameter / 1000,
+            material,
+            material === 0 ? lmd : material === -1 ? stringGauge : 0
+          ) * 1000;
         break;
       case 'diameter':
         newDiameter = calculateDiameter(frequency, length / 1000, tension, material) * 1000;
@@ -59,7 +67,7 @@ const StringOptions = () => {
           length / 1000,
           diameter / 1000,
           material,
-          material ? 0 : lmd
+          material === 0 ? lmd : material === -1 ? stringGauge : 0
         );
         break;
       default:
@@ -73,7 +81,8 @@ const StringOptions = () => {
       materialDensity: material,
     };
 
-    if (lmd) params = { ...params, linearMassDensity: parseFloat(lmd) };
+    if (material === 0) params = { ...params, linearMassDensity: parseFloat(lmd) };
+    if (material === -1) params = { ...params, linearMassDensity: stringGauge };
 
     dispatch(updateString(selectedString.id, params));
   };
@@ -126,7 +135,7 @@ const StringOptions = () => {
         </InputGroup>
       </Form.Group>
 
-      {material !== 0 && (
+      {material > 0 && (
         <Form.Group className='mb-1'>
           <Form.Label>Diameter</Form.Label>
           <InputGroup>
@@ -170,13 +179,15 @@ const StringOptions = () => {
         </InputGroup>
       </Form.Group>
 
-      <Form.Group className={material === 0 ? 'mb-1' : 'mb-3'}>
+      <Form.Group className={material === 0 || material === -1 ? 'mb-1' : 'mb-3'}>
         <Form.Label>Material</Form.Label>
         <Form.Select
-          aria-label='Default select example'
           value={material}
           onChange={(e) => {
-            if (e.target.value === '0' && selectedField === 'diameter') {
+            if (
+              (e.target.value === '0' || e.target.value === '-1') &&
+              selectedField === 'diameter'
+            ) {
               setSelectField('tension');
             }
             setMaterial(parseFloat(e.target.value));
@@ -187,9 +198,30 @@ const StringOptions = () => {
           <option value={7.8}>Steel</option>
           <option value={8.94}>Copper</option>
           <option value={8.85}>Phosphor Bronze</option>
+          <option value={-1}>Phosphor Bronze Wound</option>
           <option value={0}>Other</option>
         </Form.Select>
       </Form.Group>
+
+      {material === -1 && (
+        <Form.Group className='mb-3'>
+          <Form.Label>String Gauge</Form.Label>
+          <Form.Select
+            value={stringGauge}
+            onChange={(e) => {
+              setStringGauge(parseFloat(e.target.value));
+            }}
+          >
+            {stringGaugeData.map((gauge) => {
+              return (
+                <option key={gauge.diameter} value={gauge.linearMassDensity}>
+                  {gauge.name}
+                </option>
+              );
+            })}
+          </Form.Select>
+        </Form.Group>
+      )}
 
       {material === 0 && (
         <Form.Group className='mb-3'>
