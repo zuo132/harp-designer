@@ -7,3 +7,7 @@ export const updateNeckThickness = (thickness) => async (dispatch) => {
 export const updateTuningPinLength = (length) => async (dispatch) => {
   dispatch(createAction('UPDATE_TUNING_PIN_LENGTH')({ length }));
 };
+
+export const updateParaguayanParams = (params) => async (dispatch) => {
+  dispatch(createAction('UPDATE_PARAGUAYAN_PARAMS')({ params }));
+};
