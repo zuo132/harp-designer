@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Form, InputGroup, Button } from 'react-bootstrap';
+import { Form, InputGroup, Button, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import styled from 'styled-components';
 import {
   updateTuningPinLength,
@@ -11,7 +11,7 @@ import { stringX, calculateTensileStress } from '../utils';
 
 const NeckOptions = () => {
   const dispatch = useDispatch();
-  const { stringSpacing, stringNumber, totalLoad } = useSelector((state) => state.string);
+  const { strings, stringSpacing, stringNumber, totalLoad } = useSelector((state) => state.string);
   const {
     neckThickness,
     tuningPinLength,
@@ -28,6 +28,32 @@ const NeckOptions = () => {
   const [frontTuningPostLength, setFrontTuningPostLength] = useState(frontNeckTuningPostLength);
   const [backThickness, setBackThickness] = useState(backNeckThickness);
   const [backTuningPostLength, setBackTuningPostLength] = useState(backNeckTuningPostLength);
+
+  const frontNeckLoad = useMemo(() => {
+    let load = 0;
+    [...strings].reverse().forEach((string, index) => {
+      if (index % 2 === 0) load += string.tension;
+    });
+
+    return load;
+  }, [strings]);
+
+  const backNeckLoad = useMemo(() => {
+    let load = 0;
+    [...strings].reverse().forEach((string, index) => {
+      if (index % 2 === 1) load += string.tension;
+    });
+
+    return load;
+  }, [strings]);
+
+  const torqueImbalance = useMemo(() => {
+    const imbalance =
+      (frontNeckTuningPostLength / 1000) * frontNeckLoad * 9.807 -
+      (backNeckTuningPostLength / 1000) * backNeckLoad * 9.807;
+
+    return imbalance;
+  }, [frontNeckTuningPostLength, backNeckTuningPostLength, frontNeckLoad, backNeckLoad]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -116,6 +142,20 @@ const NeckOptions = () => {
 
         {neckStyle === 'Paraguayan' && (
           <>
+            <OverlayTrigger
+              placement='right'
+              overlay={
+                <Tooltip id='torque-imbalance-tooltip'>
+                  Front neck torque is {Math.abs(torqueImbalance).toFixed(6)} Nm{' '}
+                  {torqueImbalance > 0 ? 'greater' : 'less'} than back neck torque
+                </Tooltip>
+              }
+            >
+              <BlockSpan>
+                Torque Imbalance <b>{torqueImbalance.toFixed(6)}</b> N m
+              </BlockSpan>
+            </OverlayTrigger>
+
             <p>
               <b>Front Neck</b>
             </p>
@@ -131,16 +171,11 @@ const NeckOptions = () => {
                       0.4 /
                       1000,
                     frontNeckThickness / 1000,
-                    (totalLoad / 2) * 9.807
+                    (frontNeckLoad / 2) * 9.807
                   ) / 1000000
                 ).toFixed(6)}
               </b>{' '}
               MPa
-            </p>
-
-            <p>
-              Torque:{' '}
-              <b>{((frontNeckTuningPostLength / 1000) * (totalLoad / 2) * 9.807).toFixed(6)}</b> N m
             </p>
 
             <Form.Group className='mb-1'>
@@ -182,16 +217,11 @@ const NeckOptions = () => {
                       0.4 /
                       1000,
                     backNeckThickness / 1000,
-                    (totalLoad / 2) * 9.807
+                    (backNeckLoad / 2) * 9.807
                   ) / 1000000
                 ).toFixed(6)}
               </b>{' '}
               MPa
-            </p>
-
-            <p>
-              Torque:{' '}
-              <b>{((backNeckTuningPostLength / 1000) * (totalLoad / 2) * 9.807).toFixed(6)}</b> N m
             </p>
 
             <Form.Group className='mb-1'>
@@ -238,4 +268,9 @@ const InputGroupText = styled(InputGroup.Text)`
 
 const StyledButton = styled(Button)`
   margin: 0 1rem 1rem 0;
+`;
+
+const BlockSpan = styled.span`
+  display: inline-block;
+  margin-bottom: 1rem;
 `;

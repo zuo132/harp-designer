@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { Button } from 'react-bootstrap';
+import { Button, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { updateStringMaterialDensity } from '../actions/stringActions';
 
 const StringMaterialOptions = () => {
@@ -17,7 +17,14 @@ const StringMaterialOptions = () => {
 
   return (
     <>
-      <h5>String Material</h5>
+      <h5>
+        <OverlayTrigger
+          placement='right'
+          overlay={<Tooltip>This setting applies to all strings</Tooltip>}
+        >
+          <span>String Material (global)</span>
+        </OverlayTrigger>
+      </h5>
 
       <StyledButton
         variant={density === 1.14 ? 'primary' : materialDensity === 1.14 ? 'dark' : 'secondary'}

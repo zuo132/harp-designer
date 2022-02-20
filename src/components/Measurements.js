@@ -25,7 +25,7 @@ const Measurements = ({ yOffset }) => {
     });
 
     return yPos;
-  }, [strings, yOffset, control, stringY, getQBezierValue]);
+  }, [strings, yOffset, control, stringNumber]);
 
   return (
     <>
