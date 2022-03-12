@@ -1,11 +1,14 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import { Shape, Circle } from 'react-konva';
 
 const String = ({ start, end, string, stroke = 'white' }) => {
+  const { backgroundColor } = useSelector((state) => state.settings);
+
   return (
     <>
       <Shape
-        stroke={stroke}
+        stroke={backgroundColor === 'white' && stroke === 'white' ? 'silver' : stroke}
         strokeWidth={3}
         lineCap='round'
         string={string}

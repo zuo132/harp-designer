@@ -5,12 +5,14 @@ import stringReducer from './reducers/stringReducer';
 import soundboardReducer from './reducers/soundboardReducer';
 import pillarReducer from './reducers/pillarReducer';
 import neckReducer from './reducers/neckReducer';
+import settingsReducer from './reducers/settingsReducer';
 
 const reducers = combineReducers({
   string: stringReducer,
   soundboard: soundboardReducer,
   pillar: pillarReducer,
   neck: neckReducer,
+  settings: settingsReducer,
 });
 
 const initialState = {};
