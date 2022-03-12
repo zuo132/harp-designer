@@ -17,7 +17,7 @@ const Neck = ({ start, end, yOffset }) => {
           <Line
             x={0}
             y={0}
-            tension={0.35}
+            tension={0.3}
             points={[
               start.x,
               shape === 'Straight' ? start.y : start.y + 50,
@@ -37,20 +37,8 @@ const Neck = ({ start, end, yOffset }) => {
               end.y,
               end.x,
               end.y + 30,
-            ]}
-            stroke='black'
-            strokeWidth={5}
-            lineCap='round'
-            listening={false}
-          />
-
-          <Line
-            x={0}
-            y={0}
-            tension={0.35}
-            points={[
-              start.x,
-              start.y + 50,
+              end.x,
+              end.y,
               ...bottomNeckPoints(
                 strings,
                 defaultStringLengths,
@@ -61,13 +49,13 @@ const Neck = ({ start, end, yOffset }) => {
                 10,
                 stringNumber
               ),
-              end.x,
-              end.y,
+              start.x,
+              start.y + 50,
             ]}
             stroke='black'
             strokeWidth={5}
             lineCap='round'
-            listening={false}
+            className='Neck'
           />
 
           {/* {strings.map((string, index) => {
@@ -199,7 +187,7 @@ const bottomNeckPoints = (
     }
   });
 
-  return samples.flat();
+  return samples.reverse().flat();
 };
 
 const topNeckPoints = (

@@ -46,7 +46,6 @@ const Body = ({ start, end, dispatch }) => {
           context.closePath();
           context.fillStrokeShape(shape);
         }}
-        listening={false}
       />
 
       <Circle

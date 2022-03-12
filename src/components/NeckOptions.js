@@ -6,6 +6,7 @@ import {
   updateTuningPinLength,
   updateNeckThickness,
   updateParaguayanParams,
+  updateNeckStyle,
 } from '../actions/neckActions';
 import { stringX, calculateTensileStress } from '../utils';
 
@@ -19,9 +20,9 @@ const NeckOptions = () => {
     frontNeckTuningPostLength,
     backNeckThickness,
     backNeckTuningPostLength,
+    neckStyle,
   } = useSelector((state) => state.neck);
 
-  const [neckStyle, setNeckStyle] = useState('Standard');
   const [thickness, setThickness] = useState(neckThickness);
   const [tuningPinLen, setTuningPinLen] = useState(tuningPinLength);
   const [frontThickness, setFrontThickness] = useState(frontNeckThickness);
@@ -78,13 +79,13 @@ const NeckOptions = () => {
 
       <StyledButton
         variant={neckStyle === 'Standard' ? 'primary' : 'secondary'}
-        onClick={() => setNeckStyle('Standard')}
+        onClick={() => neckStyle !== 'Standard' && dispatch(updateNeckStyle('Standard'))}
       >
         Standard
       </StyledButton>
       <StyledButton
         variant={neckStyle === 'Paraguayan' ? 'primary' : 'secondary'}
-        onClick={() => setNeckStyle('Paraguayan')}
+        onClick={() => neckStyle !== 'Paraguayan' && dispatch(updateNeckStyle('Paraguayan'))}
       >
         Paraguayan
       </StyledButton>

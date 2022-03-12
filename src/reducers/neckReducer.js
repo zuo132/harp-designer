@@ -7,6 +7,7 @@ const initialState = {
   backNeckThickness: 15,
   frontNeckTuningPostLength: 10,
   backNeckTuningPostLength: 10,
+  neckStyle: 'Standard',
 };
 
 const neckReducer = createReducer(initialState, {
@@ -22,6 +23,10 @@ const neckReducer = createReducer(initialState, {
     Object.keys(payload.params).forEach((key) => {
       state[key] = payload.params[key];
     });
+  },
+
+  UPDATE_NECK_STYLE: (state, { payload }) => {
+    return { ...state, neckStyle: payload.style };
   },
 });
 

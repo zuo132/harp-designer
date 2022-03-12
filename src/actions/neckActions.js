@@ -11,3 +11,7 @@ export const updateTuningPinLength = (length) => async (dispatch) => {
 export const updateParaguayanParams = (params) => async (dispatch) => {
   dispatch(createAction('UPDATE_PARAGUAYAN_PARAMS')({ params }));
 };
+
+export const updateNeckStyle = (style) => async (dispatch) => {
+  dispatch(createAction('UPDATE_NECK_STYLE')({ style }));
+};

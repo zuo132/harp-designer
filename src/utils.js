@@ -85,3 +85,11 @@ export const addNoteName = (strings, lowestNote = 'C2', tuning = 'C Major') => {
 export const calculateTensileStress = (length, width, tension) => {
   return tension / (length * width);
 };
+
+export const calculateStraightPillarCrossSectionArea = (diameter) => {
+  return (diameter / 1000 / 2) ** 2 * Math.PI;
+};
+
+export const calculateDPillarCrossSectionArea = (width, thickness) => {
+  return (width / 1000) * (thickness / 1000);
+};

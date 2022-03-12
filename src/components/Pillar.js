@@ -29,7 +29,7 @@ const Pillar = ({ start, end, dStart, dEnd, width = 30 }) => {
           );
           context.fillStrokeShape(shape);
         }}
-        listening={false}
+        className='Pillar'
       />
     );
   }
@@ -44,7 +44,7 @@ const Pillar = ({ start, end, dStart, dEnd, width = 30 }) => {
       closed
       lineJoin='round'
       lineCap='round'
-      listening={false}
+      className='Pillar'
     />
   );
 };

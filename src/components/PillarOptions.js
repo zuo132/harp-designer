@@ -9,6 +9,10 @@ import {
   updatePillarThickness,
   updateNeckJointWidth,
 } from '../actions/pillarAction';
+import {
+  calculateStraightPillarCrossSectionArea,
+  calculateDPillarCrossSectionArea,
+} from '../utils';
 
 const PillarOptions = () => {
   const dispatch = useDispatch();
@@ -42,9 +46,9 @@ const PillarOptions = () => {
 
   const calculateCrossSectionArea = () => {
     if (shape === 'Straight') {
-      return (pillarDiameter / 1000 / 2) ** 2 * Math.PI;
+      return calculateStraightPillarCrossSectionArea(pillarDiameter);
     } else {
-      return (pillarWidth / 1000) * (pillarThickness / 1000);
+      return calculateDPillarCrossSectionArea(pillarWidth, pillarThickness);
     }
   };
 
