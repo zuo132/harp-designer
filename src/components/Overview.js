@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Form, Button } from 'react-bootstrap';
+import { Form, Button, InputGroup } from 'react-bootstrap';
 import styled from 'styled-components';
 import { updateLowestNote, updateStringNumber } from '../actions/stringActions';
+import { getNoteNamesInScale } from '../utils';
 
 const Overview = () => {
   const dispatch = useDispatch();
-  const { strings, stringNumber, lowestNote } = useSelector((state) => state.string);
+  const { strings, stringNumber, lowestNote, tuning } = useSelector((state) => state.string);
   let totalTension = 0;
   strings.forEach((string) => {
     totalTension += string.tension;
@@ -14,10 +15,22 @@ const Overview = () => {
 
   const [numberOfStrings, setNumberOfStrings] = useState(stringNumber);
   const [note, setNote] = useState(lowestNote);
+  const [errorMessage, setErrorMessage] = useState();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (note !== lowestNote) dispatch(updateLowestNote(note));
+    setErrorMessage(null);
+
+    if (note !== lowestNote) {
+      const noteNames = getNoteNamesInScale(tuning);
+
+      const noteName = note.length === 3 ? note.substring(0, 2) : note.substring(0, 1);
+      if (noteNames.includes(noteName)) {
+        dispatch(updateLowestNote(note));
+      } else {
+        setErrorMessage('Invalid note, the valid notes are: ' + noteNames);
+      }
+    }
     if (parseInt(numberOfStrings) !== stringNumber) {
       dispatch(updateStringNumber(parseInt(numberOfStrings)));
     }
@@ -34,7 +47,7 @@ const Overview = () => {
 
       <Form onSubmit={handleSubmit}>
         <FormContainer>
-          <Form.Group className='mb-3'>
+          <InputContainer className='mb-3'>
             <Form.Label>Number of Strings</Form.Label>
 
             <Form.Control
@@ -42,16 +55,22 @@ const Overview = () => {
               value={numberOfStrings}
               onChange={(e) => setNumberOfStrings(e.target.value)}
             ></Form.Control>
-          </Form.Group>
+          </InputContainer>
 
-          <Form.Group className='mb-3'>
+          <InputContainer className='mb-3'>
             <Form.Label>Lowest Note</Form.Label>
-            <Form.Control
-              type='text'
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-            ></Form.Control>
-          </Form.Group>
+
+            <InputGroup hasValidation>
+              <Form.Control
+                type='text'
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                required
+                isInvalid={errorMessage}
+              />
+              <Form.Control.Feedback type='invalid'>{errorMessage}</Form.Control.Feedback>
+            </InputGroup>
+          </InputContainer>
         </FormContainer>
 
         <Button className='btn-sm' type='submit' variant='secondary'>
@@ -67,4 +86,8 @@ export default Overview;
 const FormContainer = styled.div`
   display: flex;
   justify-content: space-between;
+`;
+
+const InputContainer = styled(Form.Group)`
+  flex: 1;
 `;

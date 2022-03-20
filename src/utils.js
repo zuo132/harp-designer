@@ -57,17 +57,20 @@ export const getFrequency = function (note) {
   return 440 * Math.pow(2, (keyNumber - 49) / 12);
 };
 
-export const addNoteName = (strings, lowestNote = 'C2', tuning = 'C Major') => {
+export const getNoteNamesInScale = (scale) => {
   const cMajorNotes = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
   const eFlatMajorNotes = ['C', 'D', 'D#', 'F', 'G', 'G#', 'A#'];
   const aFlatMajorNotes = ['C', 'C#', 'D#', 'F', 'G', 'G#', 'A#'];
 
-  const notes =
-    tuning === 'C Major'
-      ? cMajorNotes
-      : tuning === 'E Flat Major'
-      ? eFlatMajorNotes
-      : aFlatMajorNotes;
+  return scale === 'C Major'
+    ? cMajorNotes
+    : scale === 'E Flat Major'
+    ? eFlatMajorNotes
+    : aFlatMajorNotes;
+};
+
+export const addNoteName = (strings, lowestNote = 'C2', tuning = 'C Major') => {
+  const notes = getNoteNamesInScale(tuning);
 
   const lowestNoteName = lowestNote.charAt(0);
   const lowestNoteNumber = parseInt(lowestNote.charAt(lowestNote.length - 1));
