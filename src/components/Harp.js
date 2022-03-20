@@ -79,8 +79,23 @@ const Harp = () => {
   }, [stringNumber, stringSpacing]);
 
   useEffect(() => {
-    setHeight(defaultStringLengths[0] * 0.48);
-  }, [defaultStringLengths]);
+    let yPos = 0;
+
+    strings.forEach((string, index) => {
+      const yPosAtSoundboard = getQBezierValue(
+        (index + 4) / (stringNumber + 7),
+        stringY(-4, yOffset, height),
+        control?.y,
+        stringY(stringNumber + 3, yOffset, height)
+      );
+
+      const stringHeight =
+        stringY(-4, yOffset, height) - yPosAtSoundboard + string.length * 0.4 + 40;
+      if (stringHeight > yPos) yPos = stringHeight;
+    });
+
+    setHeight(yPos > defaultStringLengths[0] * 0.48 ? yPos : defaultStringLengths[0] * 0.48);
+  }, [defaultStringLengths, control, stringNumber, strings, yOffset]);
 
   return (
     <Stage width={width + 200} height={height + 100}>
