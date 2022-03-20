@@ -3,7 +3,7 @@ export const stringX = (index, stringSpacing) => {
 };
 
 export const stringY = (index, scale, height = 600) => {
-  return height - index * scale;
+  return height + 100 - index * scale;
 };
 
 export function getQBezierValue(t, p1, p2, p3) {

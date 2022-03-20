@@ -98,7 +98,7 @@ const Harp = () => {
   }, [defaultStringLengths, control, stringNumber, strings, yOffset]);
 
   return (
-    <Stage width={width + 200} height={height + 100}>
+    <Stage width={width + 300} height={height + 300}>
       <Provider store={store}>
         <Layer
           onClick={(e) => {
@@ -343,7 +343,7 @@ const Harp = () => {
         <Layer>
           <Measurements yOffset={yOffset} width={width} height={height} />
 
-          <Label opacity={0.8} visible={false} listening={false} ref={tooltip} offsetY={250}>
+          <Label opacity={0.8} visible={false} listening={false} ref={tooltip}>
             <Tag
               fill='black'
               pointerDirection='down'
