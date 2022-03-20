@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { Line } from 'react-konva';
 import { stringX, stringY, getQBezierValue } from '../utils';
 
-const Neck = ({ start, end, yOffset }) => {
+const Neck = ({ start, end, yOffset, harpHeight }) => {
   const { strings, defaultStringLengths, stringSpacing, stringNumber } = useSelector(
     (state) => state.string
   );
@@ -24,7 +24,7 @@ const Neck = ({ start, end, yOffset }) => {
               ...topNeckPoints(
                 strings,
                 defaultStringLengths,
-                stringY(-4, yOffset),
+                stringY(-4, yOffset, harpHeight),
                 control.y,
                 end.y,
                 stringSpacing,
@@ -42,7 +42,7 @@ const Neck = ({ start, end, yOffset }) => {
               ...bottomNeckPoints(
                 strings,
                 defaultStringLengths,
-                stringY(-4, yOffset),
+                stringY(-4, yOffset, harpHeight),
                 control.y,
                 end.y,
                 stringSpacing,

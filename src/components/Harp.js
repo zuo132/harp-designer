@@ -6,7 +6,7 @@ import Pillar from './Pillar';
 import Neck from './Neck';
 import String from './String';
 import Measurements from './Measurements';
-import { selectString } from '../actions/stringActions';
+import { selectString, updateYOffset } from '../actions/stringActions';
 import {
   stringX,
   stringY,
@@ -14,15 +14,15 @@ import {
   calculateTensileStress,
   calculateStraightPillarCrossSectionArea,
   calculateDPillarCrossSectionArea,
+  calculateYOffset,
 } from '../utils';
 import store from '../store';
 
 const Harp = () => {
   const dispatch = useDispatch();
 
-  const { strings, defaultStringLengths, stringSpacing, stringNumber, totalLoad } = useSelector(
-    (state) => state.string
-  );
+  const { strings, defaultStringLengths, stringSpacing, stringNumber, totalLoad, yOffset } =
+    useSelector((state) => state.string);
   const { angle, control, stringBandThickness, length } = useSelector((state) => state.soundboard);
   const { neckJointWidth, shape, pillarDiameter, pillarWidth, pillarThickness } = useSelector(
     (state) => state.pillar
@@ -37,9 +37,12 @@ const Harp = () => {
     backNeckTuningPostLength,
   } = useSelector((state) => state.neck);
 
-  const tooltip = useRef(null);
+  const [width, setWidth] = useState(
+    stringX(stringNumber + 3, stringSpacing) + 20 - (stringX(-4, stringSpacing) - 30)
+  );
+  const [height, setHeight] = useState(1214.57 * 0.48);
 
-  const [yOffset, setYOffset] = useState(calculateYOffset(angle, stringSpacing));
+  const tooltip = useRef(null);
 
   const frontNeckLoad = useMemo(() => {
     let load = 0;
@@ -68,11 +71,19 @@ const Harp = () => {
   }, [frontNeckTuningPostLength, backNeckTuningPostLength, frontNeckLoad, backNeckLoad]);
 
   useEffect(() => {
-    setYOffset(calculateYOffset(angle, stringSpacing));
-  }, [angle, stringSpacing]);
+    dispatch(updateYOffset(calculateYOffset(angle, stringSpacing)));
+  }, [angle, stringSpacing, dispatch]);
+
+  useEffect(() => {
+    setWidth(stringX(stringNumber + 3, stringSpacing) + 20 - (stringX(-4, stringSpacing) - 30));
+  }, [stringNumber, stringSpacing]);
+
+  useEffect(() => {
+    setHeight(defaultStringLengths[0] * 0.48);
+  }, [defaultStringLengths]);
 
   return (
-    <Stage width={window.innerWidth * 0.9} height={window.innerHeight * 0.9} offsetY={-250}>
+    <Stage width={width + 200} height={height + 100}>
       <Provider store={store}>
         <Layer
           onClick={(e) => {
@@ -175,18 +186,18 @@ const Harp = () => {
           }}
         >
           <Pillar
-            start={{ x: stringX(-4, stringSpacing), y: stringY(-4, yOffset) }}
+            start={{ x: stringX(-4, stringSpacing), y: stringY(-4, yOffset, height) }}
             end={{
               x: stringX(-4, stringSpacing),
-              y: stringY(-4, yOffset) - defaultStringLengths[0] * 0.48,
+              y: stringY(-4, yOffset, height) - defaultStringLengths[0] * 0.48,
             }}
             dStart={{
               x: stringX(-2, stringSpacing),
               y: getQBezierValue(
                 2 / (stringNumber + 7),
-                stringY(-4, yOffset),
+                stringY(-4, yOffset, height),
                 control?.y,
-                stringY(stringNumber + 3, yOffset)
+                stringY(stringNumber + 3, yOffset, height)
               ),
             }}
             dEnd={{
@@ -194,9 +205,9 @@ const Harp = () => {
               y:
                 getQBezierValue(
                   (4 + neckJointWidth) / (stringNumber + 7),
-                  stringY(-4, yOffset),
+                  stringY(-4, yOffset, height),
                   control?.y,
-                  stringY(stringNumber + 3, yOffset)
+                  stringY(stringNumber + 3, yOffset, height)
                 ) -
                 strings[neckJointWidth].length * 0.4,
             }}
@@ -205,13 +216,14 @@ const Harp = () => {
           <Neck
             start={{
               x: stringX(-4, stringSpacing),
-              y: stringY(-4, yOffset) - defaultStringLengths[0] * 0.48,
+              y: stringY(-4, yOffset, height) - defaultStringLengths[0] * 0.48,
             }}
             end={{
               x: stringX(stringNumber + 3, stringSpacing),
-              y: stringY(stringNumber + 3, yOffset),
+              y: stringY(stringNumber + 3, yOffset, height),
             }}
             yOffset={yOffset}
+            harpHeight={height}
           />
         </Layer>
 
@@ -245,9 +257,9 @@ const Harp = () => {
           {strings.map((string, index) => {
             const yPos = getQBezierValue(
               (index + 4) / (stringNumber + 7),
-              stringY(-4, yOffset),
+              stringY(-4, yOffset, height),
               control?.y,
-              stringY(stringNumber + 3, yOffset)
+              stringY(stringNumber + 3, yOffset, height)
             );
 
             return (
@@ -304,17 +316,17 @@ const Harp = () => {
           }}
         >
           <Body
-            start={{ x: stringX(-4, stringSpacing), y: stringY(-4, yOffset) }}
+            start={{ x: stringX(-4, stringSpacing), y: stringY(-4, yOffset, height) }}
             end={{
               x: stringX(stringNumber + 3, stringSpacing),
-              y: stringY(stringNumber + 3, yOffset),
+              y: stringY(stringNumber + 3, yOffset, height),
             }}
             dispatch={dispatch}
           />
         </Layer>
 
         <Layer>
-          <Measurements yOffset={yOffset} />
+          <Measurements yOffset={yOffset} width={width} height={height} />
 
           <Label opacity={0.8} visible={false} listening={false} ref={tooltip} offsetY={250}>
             <Tag
@@ -333,9 +345,3 @@ const Harp = () => {
 };
 
 export default Harp;
-
-// Angle in degrees
-const calculateYOffset = (angle, stringSpacing) => {
-  const radians = (angle * Math.PI) / 180;
-  return stringSpacing * Math.tan(radians);
-};

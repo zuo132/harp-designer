@@ -8,7 +8,7 @@ import {
   updatePillarWidth,
   updatePillarThickness,
   updateNeckJointWidth,
-} from '../actions/pillarAction';
+} from '../actions/pillarActions';
 import {
   calculateStraightPillarCrossSectionArea,
   calculateDPillarCrossSectionArea,

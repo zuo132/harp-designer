@@ -1,9 +1,9 @@
 export const stringX = (index, stringSpacing) => {
-  return index * stringSpacing + 500;
+  return index * stringSpacing + 200;
 };
 
-export const stringY = (index, scale) => {
-  return 600 - index * scale;
+export const stringY = (index, scale, height = 600) => {
+  return height - index * scale;
 };
 
 export function getQBezierValue(t, p1, p2, p3) {
@@ -92,4 +92,10 @@ export const calculateStraightPillarCrossSectionArea = (diameter) => {
 
 export const calculateDPillarCrossSectionArea = (width, thickness) => {
   return (width / 1000) * (thickness / 1000);
+};
+
+// Takes angle in degrees
+export const calculateYOffset = (angle, stringSpacing) => {
+  const radians = (angle * Math.PI) / 180;
+  return stringSpacing * Math.tan(radians);
 };

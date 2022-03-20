@@ -33,9 +33,9 @@ function App() {
         <Col md={3}>
           <OptionsPanel />
         </Col>
-        <Col md={9}>
+        <CanvasContainer md={9}>
           <Harp />
-        </Col>
+        </CanvasContainer>
       </Row>
     </AppContainer>
   );
@@ -63,4 +63,8 @@ const ColorIndicator = styled.div`
   border: 2px solid;
   border-radius: 3px;
   background-color: ${(props) => props.color};
+`;
+
+const CanvasContainer = styled(Col)`
+  overflow: scroll;
 `;

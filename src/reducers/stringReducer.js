@@ -21,6 +21,7 @@ const initialState = {
   defaultStringLengths: strings.map((string) => string.length),
   selectedString: null,
   stringSpacing: 10,
+  yOffset: 0,
   materialDensity: 1.14,
   tuning: 'C Major',
   stringNumber: 36,
@@ -172,8 +173,14 @@ const stringReducer = createReducer(initialState, {
       lowestNote: payload.lowestNote,
       strings: updatedStrings,
       totalLoad: updatedStrings.reduce((acc, string) => acc + string.tension, 0),
-      selectedString: updatedStrings.find((string) => string.id === state.selectedString.id),
+      selectedString:
+        state.selectedString &&
+        updatedStrings.find((string) => string.id === state.selectedString.id),
     };
+  },
+
+  UPDATE_Y_OFFSET: (state, { payload }) => {
+    return { ...state, yOffset: payload.yOffset };
   },
 });
 

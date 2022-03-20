@@ -23,3 +23,7 @@ export const updateStringNumber = (stringNumber) => async (dispatch) => {
 export const updateLowestNote = (lowestNote) => async (dispatch) => {
   dispatch(createAction('UPDATE_LOWEST_NOTE')({ lowestNote }));
 };
+
+export const updateYOffset = (yOffset) => async (dispatch) => {
+  dispatch(createAction('UPDATE_Y_OFFSET')({ yOffset }));
+};
