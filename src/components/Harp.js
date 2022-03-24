@@ -94,7 +94,9 @@ const Harp = () => {
       if (stringHeight > yPos) yPos = stringHeight;
     });
 
-    setHeight(yPos > defaultStringLengths[0] * 0.48 ? yPos : defaultStringLengths[0] * 0.48);
+    setHeight(
+      yPos > defaultStringLengths[0] * 0.48 ? Math.round(yPos) : defaultStringLengths[0] * 0.48
+    );
   }, [defaultStringLengths, control, stringNumber, strings, yOffset]);
 
   return (

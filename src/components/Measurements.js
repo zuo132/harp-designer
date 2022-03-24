@@ -36,12 +36,7 @@ const Measurements = ({ yOffset, width, height }) => {
           pointerHeight={0}
           lineJoin='round'
         />
-        <Text
-          text={Math.round((height / 0.4) * 100) / 100 + ' mm'}
-          fontSize={18}
-          padding={5}
-          fill='white'
-        />
+        <Text text={Math.round(height / 0.4) + ' mm'} fontSize={18} padding={5} fill='white' />
       </Label>
 
       <Arrow
@@ -83,12 +78,7 @@ const Measurements = ({ yOffset, width, height }) => {
           pointerHeight={0}
           lineJoin='round'
         />
-        <Text
-          text={Math.round((width / 0.4) * 100) / 100 + ' mm'}
-          fontSize={18}
-          padding={5}
-          fill='white'
-        />
+        <Text text={Math.round(width / 0.4) + ' mm'} fontSize={18} padding={5} fill='white' />
       </Label>
     </>
   );

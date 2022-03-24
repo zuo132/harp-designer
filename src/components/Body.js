@@ -5,6 +5,7 @@ import { updateControlPosition, updateSoundboardLength } from '../actions/soundb
 const Body = ({ start, end, dispatch }) => {
   const control = useRef(null);
   const [cachedEnd, setCachedEnd] = useState(end);
+  const [dragOffset, setDragOffset] = useState(0);
 
   useEffect(() => {
     dispatch(updateControlPosition({ x: control.current.x(), y: control.current.y() }));
@@ -29,7 +30,7 @@ const Body = ({ start, end, dispatch }) => {
 
       setCachedEnd(end);
     }
-  }, [control, dispatch, end]);
+  }, [dispatch, end]);
 
   return (
     <>
@@ -51,7 +52,7 @@ const Body = ({ start, end, dispatch }) => {
       <Circle
         ref={control}
         x={(start.x + end.x) / 2}
-        y={(start.y + end.y) / 2}
+        y={(start.y + end.y) / 2 - dragOffset}
         radius={20}
         stroke='#666'
         fill='#ddd'
@@ -68,13 +69,14 @@ const Body = ({ start, end, dispatch }) => {
         onDragMove={function () {
           this.x((start.x + end.x) / 2);
         }}
-        onDragEnd={function () {
+        onDragEnd={function (e) {
           dispatch(
             updateControlPosition({
               x: this.x(),
               y: this.y(),
             })
           );
+          setDragOffset((start.y + end.y) / 2 - e.target.y());
         }}
       />
     </>
