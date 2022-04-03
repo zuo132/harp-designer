@@ -18,6 +18,10 @@ const soundboardReducer = createReducer(initialState, {
   UPDATE_SOUNDBOARD_LENGTH: (state, { payload }) => {
     return { ...state, length: payload.length };
   },
+
+  UPDATE_SOUNDBOARD_STATE: (state, { payload }) => {
+    return { ...payload.state };
+  },
 });
 
 export default soundboardReducer;

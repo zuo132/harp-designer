@@ -28,6 +28,10 @@ const pillarReducer = createReducer(initialState, {
   UPDATE_NECK_JOINT_WIDTH: (state, { payload }) => {
     return { ...state, neckJointWidth: payload.width };
   },
+
+  UPDATE_PILLAR_STATE: (state, { payload }) => {
+    return { ...payload.state };
+  },
 });
 
 export default pillarReducer;

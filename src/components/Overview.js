@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Form, Button, InputGroup } from 'react-bootstrap';
 import styled from 'styled-components';
@@ -16,6 +16,11 @@ const Overview = () => {
   const [numberOfStrings, setNumberOfStrings] = useState(stringNumber);
   const [note, setNote] = useState(lowestNote);
   const [errorMessage, setErrorMessage] = useState();
+
+  useEffect(() => {
+    setNumberOfStrings(stringNumber);
+    setNote(lowestNote);
+  }, [stringNumber, lowestNote]);
 
   const handleSubmit = (e) => {
     e.preventDefault();

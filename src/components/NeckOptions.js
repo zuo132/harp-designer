@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Form, InputGroup, Button, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import styled from 'styled-components';
@@ -29,6 +29,22 @@ const NeckOptions = () => {
   const [frontTuningPostLength, setFrontTuningPostLength] = useState(frontNeckTuningPostLength);
   const [backThickness, setBackThickness] = useState(backNeckThickness);
   const [backTuningPostLength, setBackTuningPostLength] = useState(backNeckTuningPostLength);
+
+  useEffect(() => {
+    setThickness(neckThickness);
+    setTuningPinLen(tuningPinLength);
+    setFrontThickness(frontNeckThickness);
+    setFrontTuningPostLength(frontNeckTuningPostLength);
+    setBackThickness(backNeckThickness);
+    setBackTuningPostLength(backNeckTuningPostLength);
+  }, [
+    neckThickness,
+    tuningPinLength,
+    frontNeckThickness,
+    frontNeckTuningPostLength,
+    backNeckThickness,
+    backNeckTuningPostLength,
+  ]);
 
   const frontNeckLoad = useMemo(() => {
     let load = 0;

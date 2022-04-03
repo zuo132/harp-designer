@@ -28,6 +28,10 @@ const neckReducer = createReducer(initialState, {
   UPDATE_NECK_STYLE: (state, { payload }) => {
     return { ...state, neckStyle: payload.style };
   },
+
+  UPDATE_NECK_STATE: (state, { payload }) => {
+    return { ...payload.state };
+  },
 });
 
 export default neckReducer;

@@ -182,6 +182,10 @@ const stringReducer = createReducer(initialState, {
   UPDATE_Y_OFFSET: (state, { payload }) => {
     return { ...state, yOffset: payload.yOffset };
   },
+
+  UPDATE_STRING_STATE: (state, { payload }) => {
+    return { ...payload.state };
+  },
 });
 
 export default stringReducer;

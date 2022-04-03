@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Form, InputGroup, Button } from 'react-bootstrap';
 import styled from 'styled-components';
@@ -12,6 +12,11 @@ const SoundboardOptions = () => {
 
   const [soundboardAngle, setSoundboardAngle] = useState(angle);
   const [bandThickness, setBandThickness] = useState(stringBandThickness);
+
+  useEffect(() => {
+    setSoundboardAngle(angle);
+    setBandThickness(stringBandThickness);
+  }, [angle, stringBandThickness]);
 
   const handleSubmit = (e) => {
     e.preventDefault();

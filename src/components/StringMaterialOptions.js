@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Button, OverlayTrigger, Tooltip } from 'react-bootstrap';
@@ -10,6 +10,10 @@ const StringMaterialOptions = () => {
   const { materialDensity } = useSelector((state) => state.string);
 
   const [density, setDensity] = useState(materialDensity);
+
+  useEffect(() => {
+    setDensity(materialDensity);
+  }, [materialDensity]);
 
   const updateMaterial = (density) => {
     dispatch(updateStringMaterialDensity(density));

@@ -58,9 +58,9 @@ export const getFrequency = function (note) {
 };
 
 export const getNoteNamesInScale = (scale) => {
-  const cMajorNotes = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
-  const eFlatMajorNotes = ['C', 'D', 'D#', 'F', 'G', 'G#', 'A#'];
-  const aFlatMajorNotes = ['C', 'C#', 'D#', 'F', 'G', 'G#', 'A#'];
+  const cMajorNotes = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
+  const eFlatMajorNotes = ['A#', 'C', 'D', 'D#', 'F', 'G', 'G#'];
+  const aFlatMajorNotes = ['A#', 'C', 'C#', 'D#', 'F', 'G', 'G#'];
 
   return scale === 'C Major'
     ? cMajorNotes
@@ -74,7 +74,7 @@ export const addNoteName = (strings, lowestNote = 'C2', tuning = 'C Major') => {
 
   const lowestNoteName = lowestNote.charAt(0);
   const lowestNoteNumber = parseInt(lowestNote.charAt(lowestNote.length - 1));
-  const offset = lowestNoteName.charCodeAt(0) - 'C'.charCodeAt(0);
+  const offset = lowestNoteName.charCodeAt(0) - 'A'.charCodeAt(0);
 
   const stringsWithNoteName = strings.map((string, index) => {
     const note =
