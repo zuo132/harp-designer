@@ -255,9 +255,11 @@ const Harp = () => {
             tooltip.current
               .getText()
               .text(
-                `Frequency: ${string.frequency} Hz, Length: ${string.length} mm, Diameter: ${Number(
-                  string.diameter
-                ).toFixed(2)} mm, Tension: ${string.tension.toFixed(2)} kg`
+                `${string.note}\n\nFrequency: ${string.frequency} Hz\nLength: ${
+                  string.length
+                } mm\nDiameter: ${Number(string.diameter).toFixed(
+                  2
+                )} mm\nTension: ${string.tension.toFixed(2)} kg`
               );
             tooltip.current.position({
               x: e.evt.layerX,
