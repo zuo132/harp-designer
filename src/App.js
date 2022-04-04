@@ -48,7 +48,7 @@ function App() {
   }, []);
 
   const saveDesign = () => {
-    if (designName !== '' && !savedDesigns.includes(designName)) {
+    if (designName !== '') {
       dispatch(saveCurrentDesign(designName, designData));
 
       const designs = JSON.parse(localStorage.getItem('savedDesigns'));
