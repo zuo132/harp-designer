@@ -1,6 +1,6 @@
 import { createReducer } from '@reduxjs/toolkit';
 
-const initialState = { angle: 50, control: null, stringBandThickness: 20, length: 0 };
+const initialState = { angle: 45, control: null, stringBandThickness: 20, length: 0 };
 
 const soundboardReducer = createReducer(initialState, {
   UPDATE_SOUNDBOARD_ANGLE: (state, { payload }) => {
