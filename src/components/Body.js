@@ -42,7 +42,7 @@ const Body = ({ start, end, dispatch }) => {
           context.beginPath();
           context.moveTo(start.x, start.y);
           context.quadraticCurveTo(control.current?.x(), control.current?.y(), end.x, end.y);
-          context.lineTo(end.x, end.y + 30);
+          context.lineTo(end.x + 20, end.y);
           context.lineTo(start.x + 100, start.y);
           context.closePath();
           context.fillStrokeShape(shape);

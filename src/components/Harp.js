@@ -90,13 +90,11 @@ const Harp = () => {
       );
 
       const stringHeight =
-        stringY(-4, yOffset, height) - yPosAtSoundboard + string.length * 0.4 + 40;
+        stringY(-4, yOffset, height) - yPosAtSoundboard + string.length * 0.4 + 50;
       if (stringHeight > yPos) yPos = stringHeight;
     });
 
-    setHeight(
-      yPos > defaultStringLengths[0] * 0.48 ? Math.round(yPos) : defaultStringLengths[0] * 0.48
-    );
+    setHeight(yPos > strings[0].length * 0.48 ? Math.round(yPos) : strings[0].length * 0.48);
   }, [defaultStringLengths, control, stringNumber, strings, yOffset]);
 
   return (
@@ -206,7 +204,7 @@ const Harp = () => {
             start={{ x: stringX(-4, stringSpacing), y: stringY(-4, yOffset, height) }}
             end={{
               x: stringX(-4, stringSpacing),
-              y: stringY(-4, yOffset, height) - defaultStringLengths[0] * 0.48,
+              y: stringY(-4, yOffset, height) - height,
             }}
             dStart={{
               x: stringX(-2, stringSpacing),
@@ -233,7 +231,7 @@ const Harp = () => {
           <Neck
             start={{
               x: stringX(-4, stringSpacing),
-              y: stringY(-4, yOffset, height) - defaultStringLengths[0] * 0.48,
+              y: stringY(-4, yOffset, height) - height,
             }}
             end={{
               x: stringX(stringNumber + 3, stringSpacing),
