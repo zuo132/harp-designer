@@ -183,6 +183,10 @@ const stringReducer = createReducer(initialState, {
     return { ...state, yOffset: payload.yOffset };
   },
 
+  UPDATE_STRING_SPACING: (state, { payload }) => {
+    return { ...state, stringSpacing: payload.spacing };
+  },
+
   UPDATE_STRING_STATE: (state, { payload }) => {
     return { ...payload.state };
   },

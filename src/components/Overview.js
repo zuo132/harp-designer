@@ -2,12 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Form, Button, InputGroup } from 'react-bootstrap';
 import styled from 'styled-components';
-import { updateLowestNote, updateStringNumber } from '../actions/stringActions';
+import {
+  updateLowestNote,
+  updateStringNumber,
+  updateStringSpacing,
+} from '../actions/stringActions';
 import { getNoteNamesInScale } from '../utils';
 
 const Overview = () => {
   const dispatch = useDispatch();
-  const { strings, stringNumber, lowestNote, tuning } = useSelector((state) => state.string);
+  const { strings, stringNumber, lowestNote, tuning, stringSpacing } = useSelector(
+    (state) => state.string
+  );
   let totalTension = 0;
   strings.forEach((string) => {
     totalTension += string.tension;
@@ -15,12 +21,14 @@ const Overview = () => {
 
   const [numberOfStrings, setNumberOfStrings] = useState(stringNumber);
   const [note, setNote] = useState(lowestNote);
+  const [spacing, setSpacing] = useState(stringSpacing);
   const [errorMessage, setErrorMessage] = useState();
 
   useEffect(() => {
     setNumberOfStrings(stringNumber);
     setNote(lowestNote);
-  }, [stringNumber, lowestNote]);
+    setSpacing(stringSpacing);
+  }, [stringNumber, lowestNote, stringSpacing]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -38,6 +46,9 @@ const Overview = () => {
     }
     if (parseInt(numberOfStrings) !== stringNumber) {
       dispatch(updateStringNumber(parseInt(numberOfStrings)));
+    }
+    if (parseFloat(spacing) !== stringSpacing) {
+      dispatch(updateStringSpacing(parseFloat(spacing)));
     }
   };
 
@@ -63,6 +74,18 @@ const Overview = () => {
           </InputContainer>
 
           <InputContainer className='mb-3'>
+            <Form.Label>String Spacing</Form.Label>
+
+            <Form.Control
+              type='number'
+              value={spacing}
+              max={20}
+              min={5}
+              onChange={(e) => setSpacing(e.target.value)}
+            ></Form.Control>
+          </InputContainer>
+
+          <InputContainer className='mb-3'>
             <Form.Label>Lowest Note</Form.Label>
 
             <InputGroup hasValidation>
@@ -77,7 +100,6 @@ const Overview = () => {
             </InputGroup>
           </InputContainer>
         </FormContainer>
-
         <Button className='btn-sm' type='submit' variant='secondary'>
           Apply
         </Button>
@@ -90,6 +112,7 @@ export default Overview;
 
 const FormContainer = styled.div`
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
 `;
 

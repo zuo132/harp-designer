@@ -27,3 +27,7 @@ export const updateLowestNote = (lowestNote) => async (dispatch) => {
 export const updateYOffset = (yOffset) => async (dispatch) => {
   dispatch(createAction('UPDATE_Y_OFFSET')({ yOffset }));
 };
+
+export const updateStringSpacing = (spacing) => async (dispatch) => {
+  dispatch(createAction('UPDATE_STRING_SPACING')({ spacing }));
+};
